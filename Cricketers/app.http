@@ -1,0 +1,7 @@
+POST http://localhost:4000/contact
+Content-Type: application/json
+
+{
+  "email": "yuvakiranbandaru@gmail.com",
+  "query": "testing",
+}
