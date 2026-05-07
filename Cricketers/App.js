@@ -74,27 +74,56 @@ app.post("/createNewUser", async (request, response) => {
 
 
 app.post('/addVehicle', async (request, response) => {
- try{
-  console.log(request.body);
 
-  const result = await addVehicle.insertOne( {
-    vehicleNumber: request.body.vehicleNumber, 
-    chassisNumber: request.body.chassisNumber,
-    engineNumber: request.body.engineNumber,
-    vehicleModel: request.body.vehicleModel,
-    customerName: request.body.customerName,
-    JCnumber: request.body.JCnumber,
-    JCdate: request.body.JCdate,
-    kms: request.body.kms,
-    hrs: request.body.hrs,
-    dateOfSale: request.body.dateOfSale,
-    driverName: request.body.driverName,
-    driverNumber: request.body.driverNumber
-  });
-        console.log(`Document inserted with _id: ${result.insertedId}`);
-  response.send({ "response":'Vehicle added sucessfully'})
+  
+ try{
+  let jwtToken;
+  const authHeader = request.headers["authorization"];
+  if (authHeader !== undefined) {
+    jwtToken = authHeader.split(" ")[1];
+  }
+  if (jwtToken === undefined) {
+    response.status(401);
+    return response.send({"response":"Invalid Access Token"});
+  } else {
+    jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+      if (error) {
+        return response.status(401).send({
+          response: 'Invalid Access Token',
+        })
+    } else {
+      if(payload.role === "admin"){
+        console.log(request.body);
+
+        const result = await addVehicle.insertOne( {
+          vehicleNumber: request.body.vehicleNumber, 
+          chassisNumber: request.body.chassisNumber,
+          engineNumber: request.body.engineNumber,
+          vehicleModel: request.body.vehicleModel,
+          customerName: request.body.customerName,
+          JCnumber: request.body.JCnumber,
+          JCdate: request.body.JCdate,
+          kms: request.body.kms,
+          hrs: request.body.hrs,
+          dateOfSale: request.body.dateOfSale,
+          driverName: request.body.driverName,
+          driverNumber: request.body.driverNumber
+        });
+              console.log(`Document inserted with _id: ${result.insertedId}`);
+        response.status(200);
+       return response.send({ "response":'Vehicle added successfully'})
+  
+      }else{
+        response.status(403);
+       return response.send({"response": "Invalid access, Not Authorized"})
+      }
+
+    }})}
+
+
+  
 } catch (err) {
-  response.status(200).send(err);
+  response.status(500).send(err);
   console.log(err.message)
 }});
 
@@ -124,3 +153,40 @@ app.post('/addVehicle', async (request, response) => {
 
 
 
+app.get('/vehiclesList', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+ 
+         const vehiclesList = await addVehicle.find({}).toArray();
+         console.log(vehiclesList)
+         return response.status(200).send({
+          response: 'vehicle fetched successfully',
+          data: vehiclesList,
+        })
+   
+       
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});
+ 
