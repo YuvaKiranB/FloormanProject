@@ -55,7 +55,6 @@ run().catch(console.error);
 app.post("/createNewUser", async (request, response) => {
   try{
   const { username, name, password, role } = request.body;
-  console.log(username);
   const userId = await addUser.findOne({username})
   console.log(userId)
   if (userId !== null) {
@@ -93,7 +92,6 @@ app.post('/addVehicle', async (request, response) => {
         })
     } else {
       if(payload.role === "admin"){
-        console.log(request.body);
 
         const result = await addVehicle.insertOne( {
           vehicleNumber: request.body.vehicleNumber, 
@@ -174,7 +172,6 @@ app.get('/vehiclesList', async (request, response) => {
      } else {
  
          const vehiclesList = await addVehicle.find({}).toArray();
-         console.log(vehiclesList)
          return response.status(200).send({
           response: 'vehicle fetched successfully',
           data: vehiclesList,
