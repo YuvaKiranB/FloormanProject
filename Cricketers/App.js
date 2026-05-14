@@ -12,7 +12,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
-// ✅ explicitly handle preflight
 app.options('*', cors(corsOptions))
 app.use(cors())
 
