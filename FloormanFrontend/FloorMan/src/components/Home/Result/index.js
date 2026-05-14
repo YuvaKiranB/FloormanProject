@@ -132,11 +132,7 @@ class ResultContainer extends Component {
 
     if (response.ok) {
       const fetchedData = await response.json()
-      const updatedData = fetchedData.data.map(videos => ({
-        id: videos.id,
-        title: videos.vehicleNumber,
-    
-      }))
+      const updatedData = fetchedData.data
 
       this.setState({
         cardsList: updatedData,
@@ -144,7 +140,7 @@ class ResultContainer extends Component {
       })
     } else {
       this.setState({cardsApiStatus: apiStatusConstants.failure})
-    }
+    } 
   }
 
   renderNoResult = isDarkMode => (
@@ -175,6 +171,7 @@ class ResultContainer extends Component {
   retry = () => {
     this.setState({searchInput: ''}, this.getCards)
   }
+
 
   handleChange = event => {
     const name = event.target.name
@@ -417,13 +414,14 @@ class ResultContainer extends Component {
 
               {cardsApiStatus === apiStatusConstants.success && (
                 <CardsList>
+                  <ToggleButton onClick={() => this.getVehicles()}>
+                      Refresh
+                    </ToggleButton>
                   {cardsList.length === 0
                     ? this.renderNoResult(isDarkMode)
                     : 
                     <ContainerB>
-                    <ToggleButton onClick={() => setLoading(!loading)}>
-                      Toggle Loading
-                    </ToggleButton>
+
               
                     <Spacer />
               

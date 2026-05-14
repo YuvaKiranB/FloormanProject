@@ -42,16 +42,12 @@ export const SearchButton = styled.button`
 `
 
 export const CardsList = styled.ul`
-  padding-left: 0px;
+  padding-left: 5px;
   list-style: none;
   overflow: scroll;
   height: 100vh;
-  @media (min-width: 768px) {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 20px;
-  }
+  
+
 `
 
 export const NoResultContainer = styled.div`
@@ -124,28 +120,32 @@ export const AddVehicleButton = styled.button`
     height: 38px;
     `
 
-export const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
+    export const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+  
+    background-color: rgba(0, 0, 0, 0.5);
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    z-index: 9999;
+  `
 
-export const ModalBox = styled.div`
+  export const ModalBox = styled.div`
   background: white;
   padding: 20px;
-  border-radius: 8px;
-  width : 50%;
-  min-width: 300px;
-  display: flex;
-  flex-direction : column;
-  justify-content: center;
-  align-items: center;
+  border-radius: 10px;
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  position: relative;
+  z-index: 10000;
 `
 
 export const ShowErrorPara = styled.p`
@@ -229,6 +229,13 @@ padding-top: 0px;`
 
 export const ContainerB = styled.div`
   padding: 40px;
+  display: flex;
+flex-wrap: wrap;
+width: 100%;
+    @media (max-width: 768px) {
+    padding: 10px;
+  }
+
 `;
 
 export const ToggleButton = styled.button`

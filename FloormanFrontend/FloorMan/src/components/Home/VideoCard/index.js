@@ -4,22 +4,12 @@ import { ButtonLoader } from "../../../ButtonLoader";
 
 import {
   CardContainer,
-  DescriptionContainer,
-  Thumbnail,
-  ProfileImageContainer,
-  ProfileImage,
-  TextContainer,
-  Title,
-  TagsContainer,
-  TagName,
-  DotContainer,
-  Card,
-  Heading,
-  Row,
-  Key,
-  Value,
-  LoaderOverlay,
-  Content,
+  CardHeader,
+  CardTitle,
+  CardBody,
+  DetailRow,
+  DetailKey,
+  DetailValue,
 
 } from './styling'
 import './index.css'
@@ -28,7 +18,8 @@ import Context from '../../../Context'
 
 const GetVideoCard = props => {
   const {content, loading} = props
-  const {id, title} = content
+  console.log(content)
+  const {id, vehicleNumber, JCdate} = content
 
   return (
     <Context.Consumer>
@@ -36,24 +27,28 @@ const GetVideoCard = props => {
         const {isDarkMode} = value
         return (
           <Link to={`/videos/${id}`} className="link">
-         <Card>
-      <Content loading={loading}>
-        <Heading>{title}</Heading>
+<CardContainer>
+  <CardHeader>
+    <CardTitle>{vehicleNumber}</CardTitle>
+  </CardHeader>
 
-        {Object.entries(content).map(([key, value]) => (
-          <Row key={key}>
-            <Key>{key}</Key>
-            <Value>{value}</Value>
-          </Row>
-        ))}
-      </Content>
+  <CardBody>
 
-      {loading && (
-        <LoaderOverlay>
-          <ButtonLoader />
-        </LoaderOverlay>
-      )}
-    </Card>
+      <DetailRow >
+        <DetailKey>{"Date In"}</DetailKey>
+        <DetailValue>{JCdate}</DetailValue>
+      </DetailRow>
+
+      <DetailRow >
+        <DetailKey>{"Current Status"}</DetailKey>
+        <DetailValue>{"spare part pending: Arriving from the extra long engine of the issue then the option of the status"}</DetailValue>
+      </DetailRow>
+
+  </CardBody>
+</CardContainer>
+
+
+
           </Link>
         )
       }}

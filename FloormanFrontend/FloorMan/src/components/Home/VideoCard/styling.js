@@ -1,105 +1,75 @@
 import styled from 'styled-components'
 
+
 export const CardContainer = styled.div`
-  width: 100%;
-  margin-bottom: 20px;
-  @media (min-width: 768px) {
-    width: 450px;
-    margin-right: 20px;
+  width: 320px;
+  background: linear-gradient(145deg, #00a2ed, #0078d7);
+  border-radius: 22px;
+  padding: 22px;
+  color: white;
+
+  box-shadow:
+    0 12px 25px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px) scale(1.02);
   }
+
+    @media (max-width: 768px) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 20px;
+    width: 45vw;
+    margin: 5px;
+  }
+
+  margin: 5px;
 `
 
-export const DescriptionContainer = styled.div`
-  padding: 15px;
-  display: flex;
-  flex-direction: row;
+export const CardHeader = styled.div`
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding-bottom: 12px;
 `
 
-export const Thumbnail = styled.img`
-  width: 100%;
+export const CardTitle = styled.h1`
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0;
+  text-transform: uppercase;
 `
 
-export const ProfileImageContainer = styled.div`
-  padding: 10px;
-`
-
-export const ProfileImage = styled.img`
-  height: 60px;
-`
-
-export const TextContainer = styled.div`
+export const CardBody = styled.div`
   display: flex;
   flex-direction: column;
+  gap: 12px;
 `
 
-export const Title = styled.p`
-  font-family: roboto;
-  color: ${props => (props.isDarkMode ? '#cbd5e1' : 'black')};
-  font-size: 18px;
-  font-weight: 500;
-  margin-bottom: 10px;
-`
-
-export const TagsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
+export const DetailRow = styled.div`
+  display: flex;  
   align-items: center;
+
+  background: rgba(255,255,255,0.08);
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  backdrop-filter: blur(8px);
 `
 
-export const TagName = styled.p`
-  margin: 0px;
-  font-family: roboto;
-  font-size: 16px;
-  color: ${props => (props.isDarkMode ? '#64748b' : '#606060')};
+export const DetailKey = styled.p`
+  font-size: 14px;
+  opacity: 0.85;
+  margin: 0;
+  margin-right: 8px;
 `
-export const DotContainer = styled.div`
-  font-size: 25px;
-  color: ${props => (props.isDarkMode ? '#64748b' : '#606060')};
-  margin-left: 5px;
-  margin-right: 5px;
+
+export const DetailValue = styled.p`
+  font-size: 15px;
   font-weight: 600;
-  padding: 0px;
-  margin-top: 2px;
+  margin: 0;
 `
-export const Card = styled.div`
-  position: relative;
-  padding: 20px;
-  border-radius: 10px;
-  background: #1f2937;
-  color: white;
-  width: 320px;
-`;
-
-export const Heading = styled.h2`
-  margin-bottom: 16px;
-  font-size: 18px;
-`;
-
-export const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-`;
-
-export const Key = styled.span`
-  opacity: 0.7;
-`;
-
-export const Value = styled.span`
-  font-weight: 500;
-`;
-
-export const LoaderOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: rgba(31, 41, 55, 0.6); /* blur effect feel */
-  border-radius: 10px;
-`;
-
-export const Content = styled.div`
-  opacity: ${({ loading }) => (loading ? 0.3 : 1)};
-`;
