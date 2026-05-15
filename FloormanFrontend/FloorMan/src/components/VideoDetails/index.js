@@ -1,3 +1,4 @@
+import {Link, withRouter} from 'react-router-dom'
 import {Component} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
@@ -9,6 +10,7 @@ import {MdPlaylistAdd} from 'react-icons/md'
 import Context from '../../Context'
 import LeftPane from '../LeftPane'
 import ErrorCard from '../ErrorComponent'
+
 
 import {
   VideoDetailsContainer,
@@ -46,19 +48,20 @@ const apiStatusConstants = {
 }
 
 class VideoDetails extends Component {
-  state = {pageStatus: apiStatusConstants.initial, videoDetails: {}}
+  state = {pageStatus: apiStatusConstants.initial, vehicleDetail: {}}
 
   componentDidMount() {
-    this.getVideoData()
+    this.getVehicleData()
   }
 
-  getVideoData = async () => {
+  getVehicleData = async () => {
     this.setState({pageStatus: apiStatusConstants.process})
     const {match} = this.props
+    console.log(match)
     const {params} = match
     const {id} = params
     const jwtToken = Cookies.get('jwt_token')
-    const url = `https://apis.ccbp.in/videos/${id}`
+    const url = `http://10.249.168.1:4000/vehicleDetail/${id}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -67,28 +70,22 @@ class VideoDetails extends Component {
     }
 
     const response = await fetch(url, options)
-    const data = await response.json()
+    const vehicleDetails = await response.json()
+    const vehicleDetailData = vehicleDetails.data
 
-    const video = data.video_details
+
 
     if (response.ok) {
-      const videoDetails = {
-        id: video.id,
-        title: video.title,
-        videoUrl: video.video_url,
-        thumbnailUrl: video.thumbnail_url,
-        channel: {
-          name: video.channel.name,
-          profileImageUrl: video.channel.profile_image_url,
-          subscriberCount: video.channel.subscriber_count,
-        },
-        viewCount: video.view_count,
-        publishedAt: formatDistanceToNow(new Date(video.published_at)),
-        description: video.description,
+      const vehicleDetail = {
+        id: vehicleDetailData._id,
+        title: vehicleDetailData.vehicleNumber,
+        videoUrl: vehicleDetailData.chassisNumber,
+        publishedAt: formatDistanceToNow(new Date(vehicleDetailData.JCdate)),
+        description: vehicleDetailData.driverName,
       }
 
       this.setState({
-        videoDetails: {...videoDetails},
+        vehicleDetail: {...vehicleDetail},
         pageStatus: apiStatusConstants.success,
       })
     } else {
@@ -101,16 +98,13 @@ class VideoDetails extends Component {
   }
 
   render() {
-    const {videoDetails, pageStatus} = this.state
+    const {vehicleDetail, pageStatus} = this.state
     const {
       id,
       title,
-      videoUrl,
-      channel,
       viewCount,
-      publishedAt,
       description,
-    } = videoDetails
+    } = vehicleDetail
 
     return (
       <Context.Consumer>
@@ -152,7 +146,7 @@ class VideoDetails extends Component {
                   {pageStatus === apiStatusConstants.success && (
                     <ContentContainer>
                       <VideoContainer>
-                        <ReactPlayer width="100%" url={videoUrl} />
+                        <ReactPlayer width="100%" url={"adb"} />
                       </VideoContainer>
                       <DescriptionContainer>
                         <Title isDarkMode={isDarkMode}>{title}</Title>
@@ -162,7 +156,7 @@ class VideoDetails extends Component {
                             <DotContainer isDarkMode={isDarkMode}>
                               <BsDot className="dot" />
                             </DotContainer>
-                            <TagName>{`${publishedAt} ago`}</TagName>
+                            <TagName>{`${"dd"} ago`}</TagName>
                           </TagsContainer>
                           <ButtonsContainer>
                             <LikeButton
@@ -197,15 +191,8 @@ class VideoDetails extends Component {
                         </LargeInfoContainer>
                         <HorizontalLine />
                         <ChannelDetailsContainer>
-                          <ChannelLogo
-                            src={channel.profileImageUrl}
-                            alt="channel logo"
-                          />
                           <ChannelDescriptionContainer>
-                            <ChannelName isDarkMode={isDarkMode}>
-                              {channel.name}
-                            </ChannelName>
-                            <TagName>{`${channel.subscriberCount} subscribers`}</TagName>
+                            <TagName>{`${"channel.subscriberCount"} subscribers`}</TagName>
                           </ChannelDescriptionContainer>
                         </ChannelDetailsContainer>
                         <ChannelText isDarkMode={isDarkMode}>
@@ -241,4 +228,4 @@ class VideoDetails extends Component {
   }
 }
 
-export default VideoDetails
+export default withRouter(VideoDetails)

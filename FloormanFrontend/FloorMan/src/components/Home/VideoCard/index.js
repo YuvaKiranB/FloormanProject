@@ -19,14 +19,31 @@ import Context from '../../../Context'
 const GetVideoCard = props => {
   const {content, loading} = props
   console.log(content)
-  const {id, vehicleNumber, JCdate} = content
+  const {_id, vehicleNumber, JCdate} = content
+  console.log(_id)
+  const d = new Date(JCdate)
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+
+  let hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+
+  hours = String(hours).padStart(2, '0');
+
+  const updatedDate =  `${day}-${month}-${year} ; ${hours}:${minutes} ${ampm}`;
 
   return (
     <Context.Consumer>
       {value => {
         const {isDarkMode} = value
         return (
-          <Link to={`/videos/${id}`} className="link">
+          <Link to={`/videos/${_id}`} className="link">
 <CardContainer>
   <CardHeader>
     <CardTitle>{vehicleNumber}</CardTitle>
@@ -36,7 +53,7 @@ const GetVideoCard = props => {
 
       <DetailRow >
         <DetailKey>{"Date In"}</DetailKey>
-        <DetailValue>{JCdate}</DetailValue>
+        <DetailValue>{updatedDate}</DetailValue>
       </DetailRow>
 
       <DetailRow >
