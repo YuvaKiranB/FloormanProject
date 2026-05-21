@@ -18,9 +18,7 @@ import Context from '../../../Context'
 
 const GetVideoCard = props => {
   const {content, loading} = props
-  console.log(content)
   const {_id, vehicleNumber, JCdate} = content
-  console.log(_id)
   const d = new Date(JCdate)
   const day = String(d.getDate()).padStart(2, '0');
   const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -43,7 +41,7 @@ const GetVideoCard = props => {
       {value => {
         const {isDarkMode} = value
         return (
-          <Link to={`/videos/${_id}`} className="link">
+          <Link to={`/vehicleDetail/${_id}`} className="link">
 <CardContainer>
   <CardHeader>
     <CardTitle>{vehicleNumber}</CardTitle>

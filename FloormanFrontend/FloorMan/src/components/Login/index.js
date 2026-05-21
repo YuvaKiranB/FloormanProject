@@ -55,7 +55,8 @@ class Login extends Component {
     this.setState({isLoading:true})
     const {username, password} = this.state
     const userDetails = {username, password}
-    const url = 'http://10.249.168.1:4000/login'
+    const OurUrl = process.env.REACT_APP_OURURL
+    const url = `${OurUrl}/login`
 
     const jsonUserDetails = JSON.stringify(userDetails)
     const options = {

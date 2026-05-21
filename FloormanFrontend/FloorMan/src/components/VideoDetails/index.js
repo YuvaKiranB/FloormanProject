@@ -10,6 +10,7 @@ import {MdPlaylistAdd} from 'react-icons/md'
 import Context from '../../Context'
 import LeftPane from '../LeftPane'
 import ErrorCard from '../ErrorComponent'
+import ComplaintDetails from '../ComplaintsCard'
 
 
 import {
@@ -36,6 +37,35 @@ import {
   Content,
   LargeInfoContainer,
   LoaderContainer,
+  VehicleDetailContainer,
+  VehicleDetailHeading,
+  VehicleDetailArrowContainer,
+  Container,
+  Dropdown,
+  DropdownButton,
+  Menu,
+  MenuItem,
+  Arrow, 
+  MenuSpan,
+  ComplaintsContainer,
+  ComplaintsHeader,
+  ComplaintsHeading,
+  AddComplaintButton,
+  ModalOverlay,
+  ModalBox,
+  ContainerB,
+  FormWrapper,
+  Heading,
+  Input,
+  Button,
+  Field,
+  Label,
+  ShowErrorPara,
+  AddVehicleAuthErrorPara,
+  VehicleAddedPara,
+  AddComplaintBox,
+  ComplaintDropDownContainer,
+  ComplaintDropDown
 } from './styling'
 
 import Header from '../Header'
@@ -48,20 +78,29 @@ const apiStatusConstants = {
 }
 
 class VideoDetails extends Component {
-  state = {pageStatus: apiStatusConstants.initial, vehicleDetail: {}}
+  state = {pageStatus: apiStatusConstants.initial, vehicleDetail: {}, vehicleDetailArrow: false,isAddComplaintAuthError: false,
+  addComplaintErrMsg: "",
+  isComplaintAdded : false, vehicleId : "", complaint: "", showError: false, complaintAddedMsg: "", complaintsData: [], complaintPageStatus: apiStatusConstants.initial, isOpen: false}
 
   componentDidMount() {
     this.getVehicleData()
+    this.getComplaintsData()
+  }
+
+  changeVehicleDetial = () => {
+    console.log("vehicle detail change initiated")
+    this.setState((previousState) => ({vehicleDetailArrow: !previousState.vehicleDetailArrow}))
   }
 
   getVehicleData = async () => {
-    this.setState({pageStatus: apiStatusConstants.process})
     const {match} = this.props
     console.log(match)
     const {params} = match
     const {id} = params
+    this.setState({pageStatus: apiStatusConstants.process, vehicleId : id})
     const jwtToken = Cookies.get('jwt_token')
-    const url = `http://10.249.168.1:4000/vehicleDetail/${id}`
+    const OurUrl = process.env.REACT_APP_OURURL
+    const url = `${OurUrl}/vehicleDetail/${id}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -75,17 +114,17 @@ class VideoDetails extends Component {
 
 
 
+
+
+
+
+
+
     if (response.ok) {
-      const vehicleDetail = {
-        id: vehicleDetailData._id,
-        title: vehicleDetailData.vehicleNumber,
-        videoUrl: vehicleDetailData.chassisNumber,
-        publishedAt: formatDistanceToNow(new Date(vehicleDetailData.JCdate)),
-        description: vehicleDetailData.driverName,
-      }
+
 
       this.setState({
-        vehicleDetail: {...vehicleDetail},
+        vehicleDetail: {...vehicleDetailData},
         pageStatus: apiStatusConstants.success,
       })
     } else {
@@ -93,47 +132,187 @@ class VideoDetails extends Component {
     }
   }
 
-  retry = () => {
-    this.getVideoData()
+  getComplaintsData = async () => {
+    const {match} = this.props
+    console.log(match)
+    const {params} = match
+    const {id} = params
+    this.setState({complaintPageStatus: apiStatusConstants.process})
+    const jwtToken = Cookies.get('jwt_token')
+    const OurUrl = process.env.REACT_APP_OURURL
+    const url = `${OurUrl}/complaints/${id}`
+    const options = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+      method: 'GET',
+    }
+
+    const response = await fetch(url, options)
+    const complaints = await response.json()
+    const complaintsData = complaints.data
+
+
+
+
+
+
+
+
+    if (response.ok) {
+
+
+      this.setState({
+        complaintsData: [...complaintsData],
+        complaintPageStatus: apiStatusConstants.success,
+      })
+    } else {
+      this.setState({complaintPageStatus: apiStatusConstants.failure})
+    }
   }
 
-  render() {
-    const {vehicleDetail, pageStatus} = this.state
+
+  getUpdatedDate = (JCdate) => {
+
+    const d = new Date(JCdate)
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+  
+    let hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+  
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+  
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+  
+    hours = String(hours).padStart(2, '0');
+  
+    return `${day}-${month}-${year} ; ${hours}:${minutes} ${ampm}`;
+
+  }
+
+  retry = () => {
+    this.getVehileData()
+    this.getComplaintsData()
+  }
+  
+  addComplaint = () => {
+    const {isOpen} = this.state
+    this.setState({isOpen: !isOpen, showError: false, isAddComplaintAuthError: false, isComplaintAdded: false})
+  }
+
+  setIsOpen = () => {
+    this.setState({isOpen: false})
+  }
+
+  onSubmitFailure = errorMsg => {
+    this.setState({
+      isAddComplaintAuthError: true,
+      addComplaintErrMsg: errorMsg,
+    })
+  }
+
+  handleComplaintChange = event => {
+    const name = event.target.name
+    const value = event.target.value  
+    console.log(value)
+    this.setState({[name] : value, showError: false})
+  }
+
+  handleAddComplaintSubmit = async event => {
+    event.preventDefault();
+
     const {
-      id,
-      title,
-      viewCount,
-      description,
+      vehicleId, complaint} = this.state
+
+
+
+    const complaintDetails = {
+      vehicleId, complaint}
+
+      if (complaint.length < 3 ){
+         this.setState({showError: true})
+      }else{
+
+        const jwtToken = Cookies.get('jwt_token')
+
+        const OurUrl = process.env.REACT_APP_OURURL
+
+
+        const url = `${OurUrl}/addComplaint`
+
+        const jsonUserDetails = JSON.stringify(complaintDetails)
+        const options = {
+          method: 'POST',
+          headers: {'Content-Type': "application/json", Authorization: `Bearer ${jwtToken}`,}, 
+          body: jsonUserDetails,
+        }
+    
+    
+       const response = await fetch(url, options)
+
+       
+        const data = await response.json()
+
+        
+        if (response.ok === true) {
+          this.setState({
+            complaint: "",
+            isComplaintAdded: true,
+            complaintAddedMsg: data.response,
+              })
+
+              this.getComplaintsData()
+    
+        } else {
+          this.onSubmitFailure(data.response)
+        }
+      }
+
+
+    
+  };
+
+
+  render() {
+    const {vehicleDetail, pageStatus, vehicleDetailArrow, isOpen,
+      showError,
+      isAddComplaintAuthError,
+      addComplaintErrMsg,
+      isComplaintAdded,
+      complaintAddedMsg, complaint, vehicleId, complaintsData, complaintPageStatus
+    } = this.state
+
+    console.log(complaintsData)
+
+    const {
+      _id,
+      vehicleNumber,
+      chassisNumber,
+      engineNumber, 
+      vehicleModel, 
+      customerName, 
+      JCnumber, 
+      JCdate, 
+      kms, 
+      hrs, 
+      dateOfSale, 
+      driverName, 
+      driverNumber, 
     } = vehicleDetail
+
+
+    const updatedDate = JCdate ? this.getUpdatedDate(JCdate) : ""
 
     return (
       <Context.Consumer>
         {value => {
           const {
             isDarkMode,
-            onClickLike,
-            onClickDisLike,
-            onClickSave,
-            likedVideosIds,
-            disLikedVideosIds,
-            savedVideosIds,
           } = value
 
-          const isLiked = likedVideosIds.includes(id)
-          const isDisLiked = disLikedVideosIds.includes(id)
-          const isSaved = savedVideosIds.includes(id)
-
-          const clickedLike = () => {
-            onClickLike(videoDetails)
-          }
-
-          const clickedDisLike = () => {
-            onClickDisLike(videoDetails)
-          }
-
-          const clickedSave = () => {
-            onClickSave(videoDetails)
-          }
           return (
             <VideoDetailsContainer
               isDarkMode={isDarkMode}
@@ -145,61 +324,101 @@ class VideoDetails extends Component {
                 <RightPane>
                   {pageStatus === apiStatusConstants.success && (
                     <ContentContainer>
-                      <VideoContainer>
-                        <ReactPlayer width="100%" url={"adb"} />
-                      </VideoContainer>
-                      <DescriptionContainer>
-                        <Title isDarkMode={isDarkMode}>{title}</Title>
-                        <LargeInfoContainer>
-                          <TagsContainer>
-                            <TagName>{`${viewCount} views`}</TagName>
-                            <DotContainer isDarkMode={isDarkMode}>
-                              <BsDot className="dot" />
-                            </DotContainer>
-                            <TagName>{`${"dd"} ago`}</TagName>
-                          </TagsContainer>
-                          <ButtonsContainer>
-                            <LikeButton
-                              isLiked={isLiked}
-                              onClick={clickedLike}
-                              type="button"
-                            >
-                              <BiLike />
-                              <ButtonName>Like</ButtonName>
-                            </LikeButton>
+                          <Container>
+                        <Dropdown>
+                          <DropdownButton onClick={this.changeVehicleDetial}>
+                            Vehicle Details
+                            <Arrow open={vehicleDetailArrow}>▼</Arrow>
+                          </DropdownButton>
 
-                            <DisLikeButton
-                              onClick={clickedDisLike}
-                              type="button"
-                              isDisLiked={isDisLiked}
-                            >
-                              <BiDislike />
-                              <ButtonName>Dislike</ButtonName>
-                            </DisLikeButton>
+                          <Menu open={vehicleDetailArrow}>
+                            <MenuItem><MenuSpan>Vehicle Number :</MenuSpan>{vehicleNumber}</MenuItem>
+                            <MenuItem><MenuSpan>Chassis Number :</MenuSpan>{chassisNumber}</MenuItem>
+                            <MenuItem><MenuSpan>Engine Number :</MenuSpan>{engineNumber}</MenuItem>
+                            <MenuItem><MenuSpan>Vehicle Model :</MenuSpan>{vehicleModel}</MenuItem>
+                            <MenuItem><MenuSpan>Customer Name :</MenuSpan>{customerName}</MenuItem>
+                            <MenuItem><MenuSpan>Job Card Number :</MenuSpan>{JCnumber}</MenuItem>
+                            <MenuItem><MenuSpan>Job Card Date and Time :</MenuSpan>{updatedDate}</MenuItem>
+                            <MenuItem><MenuSpan>Odo Reading :</MenuSpan>{`${kms} Kms`}</MenuItem>
+                            <MenuItem><MenuSpan>Hrs Reading :</MenuSpan>{`${hrs} Hrs`}</MenuItem>
+                            <MenuItem><MenuSpan>Date Of Sale :</MenuSpan>{dateOfSale}</MenuItem>
+                            <MenuItem><MenuSpan>Driver Name :</MenuSpan>{driverName}</MenuItem>
+                            <MenuItem><MenuSpan>Driver Number :</MenuSpan>{driverNumber}</MenuItem>
 
-                            <SaveButton
-                              isSaved={isSaved}
-                              onClick={clickedSave}
-                              type="button"
-                            >
-                              <MdPlaylistAdd />
-                              <ButtonName>
-                                {isSaved ? 'Saved' : 'Save'}
-                              </ButtonName>
-                            </SaveButton>
-                          </ButtonsContainer>
-                        </LargeInfoContainer>
-                        <HorizontalLine />
-                        <ChannelDetailsContainer>
-                          <ChannelDescriptionContainer>
-                            <TagName>{`${"channel.subscriberCount"} subscribers`}</TagName>
-                          </ChannelDescriptionContainer>
-                        </ChannelDetailsContainer>
-                        <ChannelText isDarkMode={isDarkMode}>
-                          {description}
-                        </ChannelText>
-                      </DescriptionContainer>
-                    </ContentContainer>
+                          </Menu>
+                        </Dropdown>
+                      </Container>
+
+                      <ComplaintsContainer>
+                        <ComplaintsHeader>
+                        <ComplaintsHeading>
+                          Complaints
+                        </ComplaintsHeading>
+                        <AddComplaintButton onClick={this.addComplaint}>Add</AddComplaintButton>
+                        </ComplaintsHeader>
+
+                        {complaintPageStatus === apiStatusConstants.process && (
+                    <LoaderContainer>
+                      <div className="loader-container" data-testid="loader">
+                        <Loader
+                          type="ThreeDots"
+                          color="#3b82f6"
+                          height="50"
+                          width="50"
+                        />
+                      </div>
+                    </LoaderContainer>
+                  )}
+
+                  {complaintPageStatus === apiStatusConstants.failure && (
+                    <ErrorCard clickedRetry={this.retry} />
+                  )}
+
+                        {complaintPageStatus === apiStatusConstants.success && 
+                        (complaintsData.map(eachItem => (
+                        <ComplaintDetails key={eachItem._id} content={eachItem} />
+                      )))
+                      }
+
+                      </ComplaintsContainer>
+
+                      {isOpen && (
+        <ModalOverlay onClick={() => {this.setIsOpen()}}>
+          <ModalBox onClick={(e) => e.stopPropagation()}>
+          <ContainerB>
+      <FormWrapper onSubmit={this.handleAddComplaintSubmit}>
+        <Heading>Add Complaint</Heading>
+
+        <AddComplaintBox   id="description"
+          name="complaint"
+          rows="5"
+          cols="40"
+          placeholder="Enter Complaints here..." onChange = {this.handleComplaintChange}
+          value = {complaint}>
+       </AddComplaintBox>
+
+
+        {showError && (<ShowErrorPara>**Please Enter Complaint</ShowErrorPara>)}
+
+        
+       {
+       isAddComplaintAuthError && <AddVehicleAuthErrorPara>
+        {addComplaintErrMsg}</AddVehicleAuthErrorPara>} 
+      {
+        isComplaintAdded && <VehicleAddedPara>{complaintAddedMsg}</VehicleAddedPara>
+      }
+
+        <Button type="submit">Submit</Button>
+      </FormWrapper>
+    </ContainerB>
+
+            <button onClick={() => this.setIsOpen()}>
+              Close
+            </button>
+          </ModalBox>
+        </ModalOverlay>
+      )}
+                   </ContentContainer>
                   )}
 
                   {pageStatus === apiStatusConstants.process && (

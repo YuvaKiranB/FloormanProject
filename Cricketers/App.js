@@ -6,7 +6,7 @@ app.use(express.urlencoded({ extended: true }));
 const {ObjectId} = require('mongodb')
 
 const corsOptions = {
-  origin: '*', // or 'http://localhost:3000'
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
@@ -49,6 +49,7 @@ async function run() {
 const db = client.db('testdb');
 const addVehicle = db.collection('vehiclesData');
 const addUser = db.collection('usersData')
+const addComplaint = db.collection('complaints')
 
 run().catch(console.error);
 
@@ -212,6 +213,91 @@ app.get('/vehiclesList', async (request, response) => {
           const vehicleDetail = await addVehicle.findOne({_id: new ObjectId(id)});
           return response.status(200).send({
            response: 'vehicle fetched successfully',
+           data: vehicleDetail,
+         })
+    
+        
+      }})}
+  
+  
+    
+  } catch (err) {
+    response.status(500).send(err);
+    console.log(err.message)
+  }
+
+
+ })
+
+
+ app.post('/addComplaint', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+       if(payload.role === "admin"){
+ 
+         const result = await addComplaint.insertOne( {
+           vehicleId: String(request.body.vehicleId), 
+           complaint: String(request.body.complaint),
+         });
+               console.log(`Document inserted with _id: ${result.insertedId}`);
+         response.status(200);
+        return response.send({ "response":'Complaint added successfully'})
+   
+       }else{
+         response.status(403);
+        return response.send({"response": "Invalid access, Not Authorized"})
+       }
+ 
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});
+
+
+ app.get('/complaints/:id', async (request, response) => {
+
+  try{
+    let jwtToken;
+    const authHeader = request.headers["authorization"];
+    if (authHeader !== undefined) {
+      jwtToken = authHeader.split(" ")[1];
+    }
+    if (jwtToken === undefined) {
+      response.status(401);
+      return response.send({"response":"Invalid Access Token"});
+    } else {
+      jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+        if (error) {
+          return response.status(401).send({
+            response: 'Invalid Access Token',
+          })
+      } else {
+
+          const {id} = request.params
+  
+          const vehicleDetail = await addComplaint.find({vehicleId: id}).toArray();
+          return response.status(200).send({
+           response: 'complaints fetched successfully',
            data: vehicleDetail,
          })
     

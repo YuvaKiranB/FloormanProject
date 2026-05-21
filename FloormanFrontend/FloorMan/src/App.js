@@ -189,7 +189,7 @@ class App extends Component {
           <ProtectedRoute exact path="/trending" component={Trending} />
           <ProtectedRoute exact path="/gaming" component={Gaming} />
           <ProtectedRoute exact path="/saved-videos" component={SavedVideos} />
-          <ProtectedRoute exact path="/videos/:id" component={VideoDetails} />
+          <ProtectedRoute exact path="/vehicleDetail/:id" component={VideoDetails} />
           <Route path="/not-found" component={NotFound} />
           <Redirect to="not-found" />
         </Switch>

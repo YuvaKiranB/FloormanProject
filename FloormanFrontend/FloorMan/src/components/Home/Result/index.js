@@ -118,10 +118,13 @@ class ResultContainer extends Component {
     this.setState({
       cardsApiStatus: apiStatusConstants.inProgress,
     })
+    const OurUrl = process.env.REACT_APP_OURURL
+
+    console.log(OurUrl)
 
     const jwtToken = Cookies.get('jwt_token')
     const {searchInput} = this.state
-    const apiUrl = `http://10.249.168.1:4000/vehiclesList?search=${searchInput}`
+    const apiUrl = `${OurUrl}/vehiclesList?search=${searchInput}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -220,8 +223,10 @@ class ResultContainer extends Component {
 
         const jwtToken = Cookies.get('jwt_token')
 
+        const OurUrl = process.env.REACT_APP_OURURL
 
-        const url = 'http://10.249.168.1:4000/addVehicle'
+
+        const url = `${OurUrl}/addVehicle`
 
         const jsonUserDetails = JSON.stringify(userDetails)
         const options = {
