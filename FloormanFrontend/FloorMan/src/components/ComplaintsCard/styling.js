@@ -6,6 +6,7 @@ export const ComplaintDropDownContainer = styled.div`
   align-items: center;
   background: #f4f4f4;
   width: 96 %;
+  margin-bottom: 2px;
 `;
 
 
@@ -63,18 +64,20 @@ export const Menu = styled.div`
     open ? "translateY(0)" : "translateY(-10px)"};
 
   transition: all 0.35s ease;
+          margin-bottom: 2px;
+
 `;
 
 export const MenuItem = styled.div`
-  padding: 15px 18px;
+  padding: 5px 12px;
   cursor: pointer;
   font-size: 15px;
   color: #333;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between  ;
-  width: 48%;
+  justify-content: space-between;
+  width: 100%;
 
 
   @media(max-width: 758px){
@@ -90,4 +93,28 @@ export const MenuItem = styled.div`
   &:not(:last-child) {
     border-bottom: 1px solid #f1f1f1;
   }
+
 `;
+
+export const WorksHeader = styled.div`
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+width: 100%;`
+
+export const WorksHeading = styled.h1`
+color: black;
+font-size: 18px;
+`
+
+export const AddWorksButton = styled.button`
+border-radius: 5px;
+border:none;
+background-color: blue;
+color: white;
+padding: 10px;
+hgiseight: 100%;
+font-size: 18px;
+cursor: pointer;
+`

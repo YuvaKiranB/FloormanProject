@@ -78,9 +78,19 @@ const apiStatusConstants = {
 }
 
 class VideoDetails extends Component {
-  state = {pageStatus: apiStatusConstants.initial, vehicleDetail: {}, vehicleDetailArrow: false,isAddComplaintAuthError: false,
+  state = {pageStatus: apiStatusConstants.initial, 
+    vehicleDetail: {}, 
+    vehicleDetailArrow: false,
+    isAddComplaintAuthError: false,
   addComplaintErrMsg: "",
-  isComplaintAdded : false, vehicleId : "", complaint: "", showError: false, complaintAddedMsg: "", complaintsData: [], complaintPageStatus: apiStatusConstants.initial, isOpen: false}
+  isComplaintAdded : false, 
+  vehicleId : "", 
+  complaint: "", 
+  showError: false, 
+  complaintAddedMsg: "", 
+  complaintsData: [], 
+  complaintPageStatus: apiStatusConstants.initial, 
+  isOpen: false}
 
   componentDidMount() {
     this.getVehicleData()
@@ -94,7 +104,6 @@ class VideoDetails extends Component {
 
   getVehicleData = async () => {
     const {match} = this.props
-    console.log(match)
     const {params} = match
     const {id} = params
     this.setState({pageStatus: apiStatusConstants.process, vehicleId : id})
@@ -134,7 +143,6 @@ class VideoDetails extends Component {
 
   getComplaintsData = async () => {
     const {match} = this.props
-    console.log(match)
     const {params} = match
     const {id} = params
     this.setState({complaintPageStatus: apiStatusConstants.process})
@@ -282,10 +290,12 @@ class VideoDetails extends Component {
       isAddComplaintAuthError,
       addComplaintErrMsg,
       isComplaintAdded,
-      complaintAddedMsg, complaint, vehicleId, complaintsData, complaintPageStatus
+      complaintAddedMsg, 
+      complaint, 
+      vehicleId, 
+      complaintsData, 
+      complaintPageStatus
     } = this.state
-
-    console.log(complaintsData)
 
     const {
       _id,

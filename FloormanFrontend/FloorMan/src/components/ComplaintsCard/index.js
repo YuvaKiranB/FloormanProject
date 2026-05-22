@@ -8,7 +8,10 @@ import {
  DropdownButton,
  Menu,
  Arrow,
- MenuItem
+ MenuItem,
+ WorksHeading,
+ AddWorksButton,
+ WorksHeader,
 } from './styling'
 
 import Context from '../../Context'
@@ -27,29 +30,35 @@ class ComplaintDetails extends Component {
   }
 
 
-   getWorksData = async () => {
-    const {content} = this.props
-    console.log(content)
-    const {_id, vehicleId, complaint} = content
-    this.setState({complaint: complaint})
-    console.log(complaint)
+
     
 
-   }
+
 
    render(){
-    const {complaintDescription, complaintDetailArrow, complaint} = this.state
+    const {content} = this.props
+    const {_id, vehicleId, complaint} = content
+    const {complaintDescription, complaintDetailArrow,} = this.state  
     return(
       <ComplaintDropDownContainer>
       <ComplaintDropDown>
 
         <DropdownButton onClick={this.changeComplaintDetial}>
-          {complaintDescription}
+          {complaint}
           <Arrow open={complaintDetailArrow}>▼</Arrow>
         </DropdownButton>
 
         <Menu open={complaintDetailArrow}>
-        <MenuItem>{complaint}</MenuItem>
+        <MenuItem>
+        <WorksHeader>
+        <WorksHeading>
+          Works
+        </WorksHeading>
+        <AddWorksButton>
+          Add Works
+        </AddWorksButton>
+        </WorksHeader>
+        </MenuItem>
 
         </Menu>
       </ComplaintDropDown>
