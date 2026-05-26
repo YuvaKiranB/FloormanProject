@@ -123,12 +123,6 @@ class VideoDetails extends Component {
 
 
 
-
-
-
-
-
-
     if (response.ok) {
 
 

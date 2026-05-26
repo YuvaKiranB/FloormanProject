@@ -52,7 +52,6 @@ export const Menu = styled.div`
 
   background: white;
   border-radius: 14px;
-  overflow: hidden;
   display: flex;
   flex-wrap: wrap;
 
@@ -118,3 +117,177 @@ hgiseight: 100%;
 font-size: 18px;
 cursor: pointer;
 `
+
+export const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+  
+    background-color: rgba(0, 0, 0, 0.5);
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    z-index: 9999;
+  `
+
+  export const ModalBox = styled.div`
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+
+  max-height: 90vh;
+  overflow-y: auto;
+
+  position: relative;
+  z-index: 10000;
+`
+
+export const ShowErrorPara = styled.p`
+color: red;
+fontSize: 4px;
+padding: 5px;
+padding-top: 0px`
+
+export const ContainerB = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  background: #fff;
+  font-family: Arial, sans-serif;
+  overflow: scroll;
+`;
+
+export const FormWrapper = styled.form`
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+`;
+
+export const Heading = styled.h2`
+  text-align: center;
+  margin-bottom: 15px;
+`;
+
+export const Field = styled.div`
+  margin-bottom: 10px;
+`;
+
+export const Input = styled.input`
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+
+  &:focus {
+    border-color: #007bff;
+  }
+`;
+
+export const Button = styled.button`
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background: #0056b3;
+  }
+`;
+
+export const AddVehicleAuthErrorPara = styled.p`
+color: red;
+fontSize: 4px;
+padding: 5px;
+padding-top: 0px;`
+
+export const VehicleAddedPara= styled.p`
+color: green;
+fontSize: 4px;
+padding: 5px;
+padding-top: 0px;`
+
+export const AddWorkBox = styled.textarea`
+`
+
+
+export const FormContainer = styled.div`
+  width: 100%;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+`
+
+export const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+`
+
+export const FieldContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+export const Label = styled.label`
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+`
+
+export const TextArea = styled.textarea`
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  resize: vertical;
+
+  &:focus {
+    border-color: #2563eb;
+  }
+`
+
+export const Select = styled.select`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  background-color: white;
+  cursor: pointer;
+
+  &:focus {
+    border-color: #2563eb;
+  }
+`
+
+export const HeaderDiv = styled.div`
+  width: 100%;
+  padding: 12px;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+`
+
+export const SparesHeading = styled.h1`
+  font-size: 20px;
+  color: #111827;
+  margin: 0;`
