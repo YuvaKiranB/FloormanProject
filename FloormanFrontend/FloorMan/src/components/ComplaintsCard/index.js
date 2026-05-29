@@ -2,6 +2,8 @@ import {Link, withRouter} from 'react-router-dom'
 import {Component} from 'react'
 import Cookies from 'js-cookie'
 
+import WorksDetails from '../WorksComponent'
+
 import {
  ComplaintDropDownContainer,
  ComplaintDropDown,
@@ -44,7 +46,7 @@ const apiStatusConstants = {
 
 
 class ComplaintDetails extends Component {
-   state = {complaintDescription : "", complaintDetailArrow : false, complaint: "",
+   state = {worksDescription : "", works: "",
             isOpen: false,
             showError: false,
             isAddWorkAuthError : false,
@@ -54,6 +56,11 @@ class ComplaintDetails extends Component {
             workAddedMsg : "",
             work: "",
             addWorkErrMsg : "",
+            workDescription : "",
+            workStatus : "",
+            mechanic: "",
+            helper: "",
+            workId: ""
             
    }
 
@@ -75,6 +82,8 @@ class ComplaintDetails extends Component {
 
   setIsOpen = () => {
     this.setState({isOpen: false})
+    this.getWorksData()
+
   }
 
     
@@ -96,13 +105,13 @@ class ComplaintDetails extends Component {
     event.preventDefault();
 
     const {vehicleId,complaintId} = this.props
-    const {work} = this.state
+    const {workDescription, workStatus, mechanic, helper} = this.state
 
 
 
-    const workDetails = {vehicleId, work}
+    const workDetails = {vehicleId, complaintId, workDescription,workStatus, mechanic, helper}
 
-      if (work.length < 3 ){
+      if (workDescription.length < 3 ){
          this.setState({showError: true})
       }else{
 
@@ -129,8 +138,12 @@ class ComplaintDetails extends Component {
         
         if (response.ok === true) {
           this.setState({
-            work: "",
+            workId : data._id,
+            workDescription: "",
             isWorkAdded: true,
+            workStatus : "UNASSIGNED",
+            mechanic: "NA",
+            helper: "NA",
             workAddedMsg: data.response,
               })
 
@@ -147,13 +160,12 @@ class ComplaintDetails extends Component {
 
 
   getWorksData = async () => {
-    const {match} = this.props
-    const {params} = match
-    const {id} = params
+    const {complaintId} = this.props
+    console.log(complaintId)
     this.setState({workPageStatus: apiStatusConstants.process})
     const jwtToken = Cookies.get('jwt_token')
     const OurUrl = process.env.REACT_APP_OURURL
-    const url = `${OurUrl}/works/${id}`
+    const url = `${OurUrl}/works/${complaintId}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -164,7 +176,7 @@ class ComplaintDetails extends Component {
     const response = await fetch(url, options)
     const works = await response.json()
     const worksData = works.data
-
+    
 
 
 
@@ -173,7 +185,7 @@ class ComplaintDetails extends Component {
 
 
     if (response.ok) {
-
+    console.log(worksData)
 
       this.setState({
         worksData: [...worksData],
@@ -194,8 +206,13 @@ class ComplaintDetails extends Component {
       isAddWorkAuthError,
       isWorkAdded,
       workAddedMsg,
-      work,
-      addWorkErrMsg
+      addWorkErrMsg,
+      workDescription,
+      workStatus,
+      mechanic,
+      helper,
+      worksData,
+      workPageStatus
 
     } = this.state  
     return(
@@ -218,8 +235,14 @@ class ComplaintDetails extends Component {
         </AddWorksButton>
         </WorksHeader>
         </MenuItem>
+
+        {workPageStatus === apiStatusConstants.success && 
+                        (worksData.map(eachItem => (
+                        <WorksDetails key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} />
+                      )))
+        }
         
-        </Menu>
+         </Menu>
         {isOpen && (
         <ModalOverlay onClick={() => {this.setIsOpen()}}>
           <ModalBox onClick={(e) => e.stopPropagation()}>
@@ -229,72 +252,89 @@ class ComplaintDetails extends Component {
        <FormContainer>
   <Form>
 
-    {/* Text Area */}
-    <FieldContainer>
-      <Label htmlFor="workDescription">
-        Work Description
-      </Label>
+  <>
+      {/* Text Area */}
+      <FieldContainer>
+        <Label htmlFor="workDescription">
+          Work Description
+        </Label>
 
-      <TextArea
-        id="workDescription"
-        placeholder="Enter work description..."
-      />
-    </FieldContainer>
+        <TextArea
+          id="workDescription"
+          placeholder="Enter work description..."
+          value={workDescription}
+          onChange={this.handleWorkChange}
+          name="workDescription"
+        />
+      </FieldContainer>
 
-    {/* Work Status */}
-    <FieldContainer>
-      <Label htmlFor="workStatus">
-        Work Status
-      </Label>
+      {/* Work Status */}
+      <FieldContainer>
+        <Label htmlFor="workStatus">
+          Work Status
+        </Label>
 
-      <Select id="workStatus">
-        <option>Unassigned</option>
-        <option>Assigned</option>
-        <option>In Progress</option>
-        <option>Pending</option>
-        <option>Spares entered</option>
-        <option>Ready For Billing</option>
-      </Select>
-    </FieldContainer>
+        <Select
+          id="workStatus"
+          value={workStatus}
+          onChange={this.handleWorkChange}
+          name="workStatus"
+        >
+          <option value="UNASSIGNED">Unassigned</option>
+          <option value="ASSIGNED">Assigned</option>
+          <option value="INPROGRESS">In Progress</option>
+          <option value="PENDING">Pending</option>
+          <option value="SPARESENTERED">Spares entered</option>
+          <option value="READYFORBILLING">
+            Ready For Billing
+          </option>
+        </Select>
+      </FieldContainer>
 
-    {/* Mechanic */}
-    <FieldContainer>
-      <Label htmlFor="mechanic">
-        Mechanic
-      </Label>
+      {/* Mechanic */}
+      <FieldContainer>
+        <Label htmlFor="mechanic">
+          Mechanic
+        </Label>
 
-      <Select id="mechanic">
-        <option>NA</option>
-        <option>Suresh</option>
-        <option>Mahesh</option>
-        <option>Naresh</option>
-        <option>Rajesh</option>
-        <option>Kiran</option>
-      </Select>
-    </FieldContainer>
+        <Select
+          id="mechanic"
+          value={mechanic}
+          onChange={this.handleWorkChange}
+          name="mechanic"
+        >
+          <option value="NA">NA</option>
+          <option value="SURESH">Suresh</option>
+          <option value="MAHESH">Mahesh</option>
+          <option value="NARESH">Naresh</option>
+          <option value="RAJESH">Rajesh</option>
+          <option value="KIRAN">Kiran</option>
+        </Select>
+      </FieldContainer>
 
-    {/* Helper */}
-    <FieldContainer>
-      <Label htmlFor="helper">
-        Helper
-      </Label>
+      {/* Helper */}
+      <FieldContainer>
+        <Label htmlFor="helper">
+          Helper
+        </Label>
 
-      <Select id="helper">
-        <option>NA</option>
-        <option>Helper 2</option>
-        <option>Helper 3</option>
-        <option>Helper 4</option>
-        <option>Helper 5</option>
-        <option>Helper 6</option>
-      </Select>
-    </FieldContainer>
+        <Select
+          id="helper"
+          value={helper}
+          onChange={this.handleWorkChange}
+          name="helper"
+        >
+          <option value="NA">NA</option>
+          <option value="HELPER2">Helper 2</option>
+          <option value="HELPER3">Helper 3</option>
+          <option value="HELPER4">Helper 4</option>
+          <option value="HELPER5">Helper 5</option>
+          <option value="HELPER6">Helper 6</option>
+        </Select>
+      </FieldContainer>
 
-    {/* Spares Required Heading */}
-    <HeaderDiv>
-      <SparesHeading>
-        Spares Required
-      </SparesHeading>
-    </HeaderDiv>
+    </>
+
 
   </Form>
 </FormContainer>
@@ -312,7 +352,7 @@ class ComplaintDetails extends Component {
         isWorkAdded && <VehicleAddedPara>{workAddedMsg}</VehicleAddedPara>
       }
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit" onClick={this.handleAddWorkSubmit}>Submit</Button>
       </FormWrapper>
     </ContainerB>
 

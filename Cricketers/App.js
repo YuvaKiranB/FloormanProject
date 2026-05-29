@@ -50,6 +50,7 @@ const db = client.db('testdb');
 const addVehicle = db.collection('vehiclesData');
 const addUser = db.collection('usersData')
 const addComplaint = db.collection('complaints')
+const addWork = db.collection('works')
 
 run().catch(console.error);
 
@@ -298,6 +299,99 @@ app.get('/vehiclesList', async (request, response) => {
           const vehicleDetail = await addComplaint.find({vehicleId: id}).toArray();
           return response.status(200).send({
            response: 'complaints fetched successfully',
+           data: vehicleDetail,
+         })
+    
+        
+      }})}
+  
+  
+    
+  } catch (err) {
+    response.status(500).send(err);
+    console.log(err.message)
+  }
+
+
+ })
+
+
+
+ app.post('/addWork', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+       if(payload.role === "admin"){
+ 
+         const result = await addWork.insertOne( {
+           vehicleId: String(request.body.vehicleId), 
+           complaintId: String(request.body.complaintId),
+           workDescription: String(request.body.workDescription),
+           workStatus: String(request.body.workStatus),
+           mechanic: String(request.body.mechanic),
+           helper: String(request.body.helper),
+         });
+               console.log(`Document inserted with _id: ${result.insertedId}`);
+         response.status(200);
+        return response.send({ "response":'Complaint added successfully'})
+   
+       }else{
+         response.status(403);
+        return response.send({"response": "Invalid access, Not Authorized"})
+       }
+ 
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});
+
+
+
+
+
+ app.get('/works/:id', async (request, response) => {
+
+  try{
+    let jwtToken;
+    const authHeader = request.headers["authorization"];
+    if (authHeader !== undefined) {
+      jwtToken = authHeader.split(" ")[1];
+    }
+    if (jwtToken === undefined) {
+      response.status(401);
+      return response.send({"response":"Invalid Access Token"});
+    } else {
+      jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+        if (error) {
+          return response.status(401).send({
+            response: 'Invalid Access Token',
+          })
+      } else {
+
+          const {id} = request.params
+  
+          const vehicleDetail = await addWork.find({complaintId: id}).toArray();
+          return response.status(200).send({
+           response: 'works fetched successfully',
            data: vehicleDetail,
          })
     

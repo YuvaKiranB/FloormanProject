@@ -150,7 +150,7 @@ class VideoDetails extends Component {
       method: 'GET',
     }
 
-    const response = await fetch(url, options)
+    const response = await fetch(url, options)  
     const complaints = await response.json()
     const complaintsData = complaints.data
 
@@ -380,7 +380,7 @@ class VideoDetails extends Component {
 
                         {complaintPageStatus === apiStatusConstants.success && 
                         (complaintsData.map(eachItem => (
-                        <ComplaintDetails key={eachItem._id} content={eachItem} />
+                        <ComplaintDetails key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} />
                       )))
                       }
 
