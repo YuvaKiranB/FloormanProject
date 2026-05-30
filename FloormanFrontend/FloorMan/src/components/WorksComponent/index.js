@@ -8,18 +8,14 @@ import Cookies from 'js-cookie'
 import {
     Page,
     Container,
-    Card,
-    Header,
-    Title,
-    Subtitle,
-    ButtonGroup,
-    ActionButton,
-    TableWrapper,
     Table,
-    TableHead,
-    TableRow,
-    TableCell,
-    Status,
+    Td,
+    HeaderCell,
+    TitleCell,
+    SparesHeader,
+    SparesRequiredHeading,
+    
+    
   } from "./styling";
 
 
@@ -185,43 +181,44 @@ import {
      const {} = this.state  
      return(
 
-      <Page>
-  <Container>
-    <Card>
-      <Header>
-        <div>
-          <Title>WORKFLOW MATRIX</Title>
-          <Subtitle>Industrial Work Monitoring System</Subtitle>
-        </div>
+      <Container>
+      <Table>
+        <tbody>
+          <tr>
+            <TitleCell colSpan={3} rowSpan={2}>{workDescription}</TitleCell>
+            <HeaderCell>Work Status</HeaderCell>
+            <Td>{workStatus}</Td>
+          </tr>
 
-        <ButtonGroup>
-          <ActionButton>Add Task</ActionButton>
-          <ActionButton>Export</ActionButton>
-        </ButtonGroup>
-      </Header>
+          <tr>
+            <Td>Mech: {mechanic}</Td>
+            <Td>Hel : {helper}</Td>
+          </tr>
 
-      <TableWrapper>
-        <Table>
-          <thead>
-            <tr>
-              <TableHead>Code</TableHead>
-              <TableHead>Task</TableHead>
-              <TableHead>Hours</TableHead>
-              <TableHead>Mechanic</TableHead>
-              <TableHead>Helper</TableHead>
-              <TableHead>Time</TableHead>
-              <TableHead>Status</TableHead>
-            </tr>
-          </thead>
+          <tr>
+            <Td>BRF300</Td>
+            <Td>Brakes Adjustment</Td>
+            <Td>Actual: 5 hrs</Td>
+            <HeaderCell>Time on Work</HeaderCell>
+            <Td>5 Hrs</Td>
+          </tr>
 
-          <tbody>
-            <h1>{workDescription}</h1>
-          </tbody>
-        </Table>
-      </TableWrapper>
-    </Card>
-  </Container>
-</Page>
+          <tr>
+            <Td>PPS120</Td>
+            <Td>Propeller shaft R&amp;R</Td>
+            <Td>Actual: 3 hrs</Td>
+          </tr>
+
+          <tr>
+            <Td colSpan={5}>
+              <SparesHeader>
+              <SparesRequiredHeading>Spares Reqired</SparesRequiredHeading>
+              </SparesHeader>
+              </Td>
+          </tr>
+        </tbody>
+      </Table>
+    </Container>
        
      )
     }
