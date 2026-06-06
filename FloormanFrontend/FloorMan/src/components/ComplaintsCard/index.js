@@ -60,7 +60,8 @@ class ComplaintDetails extends Component {
             workStatus : "",
             mechanic: "",
             helper: "",
-            workId: ""
+            workId: "",
+            ROT: [],
             
    }
 
@@ -94,11 +95,73 @@ class ComplaintDetails extends Component {
     })
   }
 
+  addROT = id => {
+    this.addROTPutCall(id)
+    this.getWorksData()
+  }
+
   handleWorkChange = event => {
     const name = event.target.name
     const value = event.target.value  
     this.setState({[name] : value, showError: false})
   }
+
+
+    addROTPutCall = async id => {
+
+    const {vehicleId,complaintId} = this.props
+    const {workDescription, workStatus, mechanic, helper} = this.state
+
+
+
+    const workDetails = {vehicleId, complaintId, workDescription,workStatus, mechanic, helper}
+
+      if (workDescription.length < 3 ){
+         this.setState({showError: true})
+      }else{
+
+        const jwtToken = Cookies.get('jwt_token')
+
+        const OurUrl = process.env.REACT_APP_OURURL
+
+
+        const url = `${OurUrl}/addWork`
+
+        const jsonUserDetails = JSON.stringify(workDetails)
+        const options = {
+          method: 'POST',
+          headers: {'Content-Type': "application/json", Authorization: `Bearer ${jwtToken}`,}, 
+          body: jsonUserDetails,
+        }
+    
+    
+       const response = await fetch(url, options)
+
+       
+        const data = await response.json()
+
+        
+        if (response.ok === true) {
+          this.setState({
+            workId : data._id,
+            workDescription: "",
+            isWorkAdded: true,
+            workStatus : "UNASSIGNED",
+            mechanic: "NA",
+            helper: "NA",
+            workAddedMsg: data.response,
+              })
+
+              this.getWorksData()
+    
+        } else {
+          this.onSubmitFailure(data.response)
+        }
+      }
+
+
+    
+  };
 
 
   handleAddWorkSubmit = async event => {

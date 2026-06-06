@@ -12,8 +12,10 @@ import {
     Td,
     HeaderCell,
     TitleCell,
-    SparesHeader,
-    SparesRequiredHeading,
+    DescriptionHeader,
+    DescriptionPara,
+    RemarksSpan,
+    RemarksCell,
     
     
   } from "./styling";
@@ -196,9 +198,7 @@ import {
           </tr>
 
           <tr>
-            <Td>BRF300</Td>
-            <Td>Brakes Adjustment</Td>
-            <Td>Actual: 5 hrs</Td>
+          <RemarksCell colSpan={3}> Doing cluth overhaul</RemarksCell>
             <HeaderCell>Time on Work</HeaderCell>
             <Td>5 Hrs</Td>
           </tr>
@@ -207,18 +207,13 @@ import {
             <Td>PPS120</Td>
             <Td>Propeller shaft R&amp;R</Td>
             <Td>Actual: 3 hrs</Td>
+            <Td>Percentage: 20%</Td>
+            <Td>ROT Hours : </Td>
           </tr>
 
-          <tr>
-            <Td colSpan={5}>
-              <SparesHeader>
-              <SparesRequiredHeading>Spares Reqired</SparesRequiredHeading>
-              </SparesHeader>
-              </Td>
-          </tr>
         </tbody>
       </Table>
-    </Container>
+    </Container> 
        
      )
     }

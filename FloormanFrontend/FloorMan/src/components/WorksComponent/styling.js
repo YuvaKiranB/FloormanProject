@@ -28,13 +28,22 @@ export const TitleCell = styled(Td)`
 `;
 
 
-export const SparesHeader = styled.div`
+export const DescriptionHeader = styled.div`
 display: flex;
 flex-direction: row;
-justify-content:center;
+justify-content:start;
 align-items: center;`
 
-export const SparesRequiredHeading = styled.h1`
+export const DescriptionPara = styled.p`
 font-size: 18px;
 margin: 0px;
 padding: 0px;`
+
+export const RemarksSpan = styled.p`
+font-size: 18px;
+font-weight: normal;`
+
+export const RemarksCell = styled(Td)`
+  font-size: 14px;
+
+`;
