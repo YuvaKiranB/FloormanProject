@@ -195,6 +195,28 @@ class VideoDetails extends Component {
 
   }
 
+
+  getUpdatedDateB = (dateOfSale) => {
+
+    const d = new Date(dateOfSale)
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+  
+    let hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+  
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+  
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+  
+    hours = String(hours).padStart(2, '0');
+  
+    return `${day}-${month}-${year}`;
+
+  }
+
   retry = () => {
     this.getVehileData()
     this.getComplaintsData()
@@ -309,6 +331,7 @@ class VideoDetails extends Component {
 
 
     const updatedDate = JCdate ? this.getUpdatedDate(JCdate) : ""
+    const updatedSaleDate = dateOfSale ? this.getUpdatedDateB(dateOfSale) : ""
 
     return (
       <Context.Consumer>
@@ -345,7 +368,7 @@ class VideoDetails extends Component {
                             <MenuItem><MenuSpan>Job Card Date and Time :</MenuSpan>{updatedDate}</MenuItem>
                             <MenuItem><MenuSpan>Odo Reading :</MenuSpan>{`${kms} Kms`}</MenuItem>
                             <MenuItem><MenuSpan>Hrs Reading :</MenuSpan>{`${hrs} Hrs`}</MenuItem>
-                            <MenuItem><MenuSpan>Date Of Sale :</MenuSpan>{dateOfSale}</MenuItem>
+                            <MenuItem><MenuSpan>Date Of Sale :</MenuSpan>{updatedSaleDate}</MenuItem>
                             <MenuItem><MenuSpan>Driver Name :</MenuSpan>{driverName}</MenuItem>
                             <MenuItem><MenuSpan>Driver Number :</MenuSpan>{driverNumber}</MenuItem>
 

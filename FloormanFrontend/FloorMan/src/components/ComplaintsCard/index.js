@@ -33,6 +33,15 @@ import {
  Select,
  HeaderDiv,
  SparesHeading,
+ SparesMenu,
+ SparesHeader,
+ SparesItem,
+ AddSparesButton,
+ SparePartNumberInput,
+ SparePartDescription,
+ SparePartQuantity,
+ SparesSuggestionsContainer,
+ SparesSuggitionsHeading,
  
 } from './styling'
 
@@ -48,9 +57,13 @@ const apiStatusConstants = {
 class ComplaintDetails extends Component {
    state = {worksDescription : "", works: "",
             isOpen: false,
+            isSparesOpen: false,
             showError: false,
+            showSparesError: false,
             isAddWorkAuthError : false,
+            isAddSparesAuthError: false,
             isWorkAdded: false,
+            isSparesAdded: false,
             workPageStatus: apiStatusConstants.initial, 
             worksData: [], 
             workAddedMsg : "",
@@ -62,6 +75,10 @@ class ComplaintDetails extends Component {
             helper: "",
             workId: "",
             ROT: [],
+            sparePartNumber: "",
+            SparePartDescription: "",
+            SparePartQuantity: "",
+            sparePartSuggestions: [],
             
    }
 
@@ -81,8 +98,19 @@ class ComplaintDetails extends Component {
     this.setState({isOpen: !isOpen, showError: false, isAddWorkAuthError: false, isWorkAdded: false})
   }
 
+  addSpares = () => {
+    const {isSparesOpen} = this.state
+    this.setState({isSparesOpen: !isSparesOpen, showSparesError: false, isAddSparesAuthError: false, isSparesAdded: false})
+  }
+
   setIsOpen = () => {
     this.setState({isOpen: false})
+    this.getWorksData()
+
+  }
+
+  setIsSparesOpen = () => {
+    this.setState({isSparesOpen: false})
     this.getWorksData()
 
   }
@@ -95,15 +123,29 @@ class ComplaintDetails extends Component {
     })
   }
 
+  onSubmitSparesFailure = errorMsg => {
+    this.setState({
+      isAddSparesAuthError: true,
+      addSparesErrMsg: errorMsg,
+    })
+  }
+
   addROT = id => {
     this.addROTPutCall(id)
     this.getWorksData()
   }
 
-  handleWorkChange = event => {
+  handleSparesChange = event => {
     const name = event.target.name
     const value = event.target.value  
-    this.setState({[name] : value, showError: false})
+    this.setState({[name] : value, showSparesError: false})
+
+    console.log(value.length)
+
+    if (value.length >= 3){
+      console.log("triggered spares suggestion")
+      this.getSparePartsSuggestions()
+    }
   }
 
 
@@ -164,7 +206,7 @@ class ComplaintDetails extends Component {
   };
 
 
-  handleAddWorkSubmit = async event => {
+  handleAddSparesSubmit = async event => {
     event.preventDefault();
 
     const {vehicleId,complaintId} = this.props
@@ -261,6 +303,44 @@ class ComplaintDetails extends Component {
 
 
 
+  getSparePartsSuggestions = async () => {
+    const {sparePartNumber, sparePartDescription} = this.state
+    const jwtToken = Cookies.get('jwt_token')
+    const OurUrl = process.env.REACT_APP_OURURL
+    const url = `${OurUrl}/works/sparePartSuggestions?partNo=${sparePartNumber}&partDescription=${sparePartDescription}`
+    const options = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+      method: 'GET',
+    }
+
+    const response = await fetch(url, options)
+    const spares = await response.json()
+    const sparesData = spares.data
+    
+
+
+
+
+
+
+
+    if (response.ok) {
+
+      this.setState({
+        sparesData: [...sparesData],
+      })
+
+      console.log(sparesData)
+    } else {
+     console.log("error")
+    }
+  }
+
+
+
+
 
    render(){
     const {content} = this.props
@@ -275,7 +355,16 @@ class ComplaintDetails extends Component {
       mechanic,
       helper,
       worksData,
-      workPageStatus
+      workPageStatus,
+      isSparesOpen,
+      showSparesError,
+      isAddSparesAuthError,
+      isSparesAdded,
+      sparesAddedMsg,
+      addSparesErrMsg,
+      sparePartNumber,
+      sparePartDescription,
+      sparePartQuantity
 
     } = this.state  
     return(
@@ -306,6 +395,27 @@ class ComplaintDetails extends Component {
         }
         
          </Menu>
+
+
+         <SparesMenu open={complaintDetailArrow}>
+        <SparesItem>
+        <SparesHeader>
+        <SparesHeading>
+          Spares Required
+        </SparesHeading>
+        <AddSparesButton  onClick={this.addSpares} >
+          Add Spares
+        </AddSparesButton>
+        </SparesHeader>
+        </SparesItem>
+
+        {workPageStatus === apiStatusConstants.success && 
+                        (worksData.map(eachItem => (
+                        <WorksDetails key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} />
+                      )))
+        }
+        
+         </SparesMenu>
         {isOpen && (
         <ModalOverlay onClick={() => {this.setIsOpen()}}>
           <ModalBox onClick={(e) => e.stopPropagation()}>
@@ -420,6 +530,97 @@ class ComplaintDetails extends Component {
     </ContainerB>
 
             <button onClick={() => this.setIsOpen()}>
+              Close
+            </button>
+          </ModalBox>
+        </ModalOverlay>
+      )}
+
+
+
+{isSparesOpen && (
+        <ModalOverlay onClick={() => {this.setIsSparesOpen()}}>
+          <ModalBox onClick={(e) => e.stopPropagation()}>
+          <ContainerB>
+      <FormWrapper onSubmit={this.handleAddSparesSubmit}>
+        <Heading>Add Spares</Heading>
+       <FormContainer>
+  <Form>
+
+  <>
+      <FieldContainer>
+        <Label htmlFor="sparePartNumber">
+          Spare Part Number
+        </Label>
+
+        <SparePartNumberInput
+          id="SparePartNumber"
+          placeholder="Enter Atleast 3 char..."
+          value={sparePartNumber}
+          onChange={this.handleSparesChange}
+          name="sparePartNumber"
+        />
+      </FieldContainer>
+
+      <FieldContainer>
+        <Label htmlFor="sparePartDescription">
+          Spare Part Description
+        </Label>
+
+        <SparePartDescription
+          id="SparePartDescription"
+          placeholder="Enter Atleast 3 char..."
+          value={sparePartDescription}
+          onChange={this.handleSparesChange}
+          name="sparePartDescription"
+        />
+      </FieldContainer>
+
+      <FieldContainer>
+        <Label htmlFor="sparePartQuantity">
+          Spare Part Quantity
+        </Label>
+
+        <SparePartQuantity
+          id="SparePartQuantity"
+          placeholder="Enter quantity..."
+          value={sparePartQuantity}
+          onChange={this.handleSparesChange}
+          name="sparePartQuantity"
+        />
+      </FieldContainer>
+
+      
+    </>
+
+
+  </Form>
+</FormContainer>
+
+
+
+
+        {showSparesError && (<ShowErrorPara>**Please Enter Spares</ShowErrorPara>)}
+
+        
+       {
+       isAddSparesAuthError && <AddVehicleAuthErrorPara>
+        {addSparesErrMsg}</AddVehicleAuthErrorPara>} 
+      {
+        isSparesAdded && <VehicleAddedPara>{sparesAddedMsg}</VehicleAddedPara>
+      }
+
+        <Button type="submit" onClick={this.handleAddSparesSubmit}>Submit</Button>
+      </FormWrapper>
+
+      <SparesSuggestionsContainer>
+        <SparesSuggitionsHeading>Suggestions</SparesSuggitionsHeading>
+
+
+      </SparesSuggestionsContainer>
+    </ContainerB>
+
+            <button onClick={() => this.setIsSparesOpen()}>
               Close
             </button>
           </ModalBox>

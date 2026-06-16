@@ -51,6 +51,7 @@ const addVehicle = db.collection('vehiclesData');
 const addUser = db.collection('usersData')
 const addComplaint = db.collection('complaints')
 const addWork = db.collection('works')
+const sparePartsSuggestions = db.collection('sparePartsSuggestions')
 
 run().catch(console.error);
 
@@ -407,3 +408,87 @@ app.get('/vehiclesList', async (request, response) => {
 
 
  })
+
+
+ app.get('/works/sparePartsSuggestions', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+
+        const {partNumber, partDescription} = req.query
+
+        
+ 
+         const sparePartsSuggestionsList = sparePartsSuggestions.aggregate([
+          {
+            $search: {
+              compound: {
+                should: [
+                  {
+                    autocomplete: {
+                      query: searchTerm,
+                      path: {partNumber},
+                      fuzzy: {
+                        maxEdits: 1
+                      }
+                    }
+                  },
+                  {
+                    autocomplete: {
+                      query: searchTerm,
+                      path: {partDescription},
+                      fuzzy: {
+                        maxEdits: 1
+                      }
+                    }
+                  }
+                ],
+                minimumShouldMatch: 1
+              }
+            }
+          },
+          {
+            $project: {
+              partNumber: 1,
+              partDescription: 1,
+              score: { $meta: "searchScore" }
+            }
+          },
+          {
+            $sort: {
+              score: -1
+            }
+          },
+          {
+            $limit: 20
+          }
+        ])
+         return response.status(200).send({
+          response: 'spare parts list fetched successfully',
+          data: sparePartsSuggestionsList,
+        })
+   
+       
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});

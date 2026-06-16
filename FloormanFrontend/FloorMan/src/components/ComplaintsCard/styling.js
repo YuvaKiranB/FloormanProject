@@ -13,6 +13,7 @@ export const ComplaintDropDownContainer = styled.div`
 export const ComplaintDropDown = styled.div`
   position: relative;
   width: 100%;
+
 `;
 
 export const DropdownButton = styled.button`
@@ -46,6 +47,8 @@ export const Arrow = styled.span`
 
 export const Menu = styled.div`
 
+
+
   top: 65px;
   left: 0;
   width: 100%;
@@ -55,9 +58,10 @@ export const Menu = styled.div`
   display: flex;
   flex-wrap: wrap;
 
+
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 
-  max-height: ${({ open }) => (open ? "100vh" : "0")};
+  max-height: ${({ open }) => (open ? "1000vh" : "0")};
   opacity: ${({ open }) => (open ? "1" : "0")};
   transform: ${({ open }) =>
     open ? "translateY(0)" : "translateY(-10px)"};
@@ -67,7 +71,62 @@ export const Menu = styled.div`
 
 `;
 
-export const MenuItem = styled.div`
+export const SparesMenu = styled.div`
+
+
+
+  top: 65px;
+  left: 0;
+  width: 100%;
+
+  background: white;
+  border-radius: 14px;
+  display: flex;
+  flex-wrap: wrap;
+
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+
+  max-height: ${({ open }) => (open ? "1000vh" : "0")};
+  opacity: ${({ open }) => (open ? "1" : "0")};
+  transform: ${({ open }) =>
+    open ? "translateY(0)" : "translateY(-10px)"};
+
+  transition: all 0.35s ease;
+          margin-bottom: 2px;
+
+`;
+
+  export const MenuItem = styled.div`
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 15px;
+    color: #333;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+
+    @media(max-width: 758px){
+    width: 100%;
+    }
+
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #eef2ff;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #f1f1f1;
+    }
+
+  `;
+
+
+  export const SparesItem = styled.div`
   padding: 5px 12px;
   cursor: pointer;
   font-size: 15px;
@@ -102,12 +161,35 @@ justify-content: space-between;
 align-items: center;
 width: 100%;`
 
+export const SparesHeader = styled.div`
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+width: 100%;`
+
 export const WorksHeading = styled.h1`
 color: black;
 font-size: 18px;
 `
 
+export const SparesHeading = styled.h1`
+color: black;
+font-size: 18px;
+`
+
 export const AddWorksButton = styled.button`
+border-radius: 5px;
+border:none;
+background-color: blue;
+color: white;
+padding: 10px;
+hgiseight: 100%;
+font-size: 18px;
+cursor: pointer;
+`
+
+export const AddSparesButton = styled.button`
 border-radius: 5px;
 border:none;
 background-color: blue;
@@ -154,7 +236,8 @@ padding-top: 0px`
 
 export const ContainerB = styled.div`
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: start;
   align-items: center;
   height: 80vh;
   background: #fff;
@@ -167,7 +250,6 @@ export const FormWrapper = styled.form`
   padding: 25px;
   border-radius: 10px;
   width: 100%;
-  height: 100%;
 `;
 
 export const Heading = styled.h2`
@@ -264,6 +346,50 @@ export const TextArea = styled.textarea`
     border-color: #2563eb;
   }
 `
+export const SparePartDescription = styled.textarea`
+  width: 100%;
+  min-height: 20px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  resize: vertical;
+
+  &:focus {
+    border-color: #2563eb;
+  }
+`
+export const SparePartNumberInput = styled.input`
+  width: 100%;
+  min-height: 20px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  resize: vertical;
+
+  &:focus {
+    border-color: #2563eb;
+  }
+`
+
+export const SparePartQuantity = styled.input`
+  width: 100%;
+  min-height: 20px;
+  type: number;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  resize: vertical;
+
+  &:focus {
+    border-color: #2563eb;
+  }
+`
 
 export const Select = styled.select`
   width: 100%;
@@ -287,7 +413,7 @@ export const HeaderDiv = styled.div`
   border-radius: 8px;
 `
 
-export const SparesHeading = styled.h1`
-  font-size: 20px;
-  color: #111827;
-  margin: 0;`
+export const SparesSuggestionsContainer = styled.div``
+
+export const SparesSuggitionsHeading = styled.h1`
+font-size: 18px;`
