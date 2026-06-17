@@ -52,6 +52,7 @@ const addUser = db.collection('usersData')
 const addComplaint = db.collection('complaints')
 const addWork = db.collection('works')
 const sparePartsSuggestions = db.collection('sparePartsSuggestions')
+const addSpares = db.collection('sparesData')
 
 run().catch(console.error);
 
@@ -410,7 +411,7 @@ app.get('/vehiclesList', async (request, response) => {
  })
 
 
- app.get('/works/sparePartsSuggestions', async (request, response) => {
+ app.get('/sparePartsSuggestions', async (request, response) => {
 
   
   try{
@@ -430,60 +431,89 @@ app.get('/vehiclesList', async (request, response) => {
          })
      } else {
 
-        const {partNumber, partDescription} = req.query
+      
 
-        
- 
-         const sparePartsSuggestionsList = sparePartsSuggestions.aggregate([
-          {
-            $search: {
-              compound: {
-                should: [
-                  {
-                    autocomplete: {
-                      query: searchTerm,
-                      path: {partNumber},
-                      fuzzy: {
-                        maxEdits: 1
-                      }
-                    }
-                  },
-                  {
-                    autocomplete: {
-                      query: searchTerm,
-                      path: {partDescription},
-                      fuzzy: {
-                        maxEdits: 1
-                      }
-                    }
-                  }
-                ],
-                minimumShouldMatch: 1
-              }
-            }
-          },
-          {
-            $project: {
-              partNumber: 1,
-              partDescription: 1,
-              score: { $meta: "searchScore" }
-            }
-          },
-          {
-            $sort: {
-              score: -1
-            }
-          },
-          {
-            $limit: 20
-          }
-        ])
-         return response.status(200).send({
-          response: 'spare parts list fetched successfully',
-          data: sparePartsSuggestionsList,
-        })
+      const { partNumber = "", partDescription = "" } = request.query;
+      let queryParameter = ""
+      if (partNumber === ""){
+        queryParameter = partDescription
+      }else{
+        queryParameter = partNumber
+      }
+
+const sparePartsSuggestionsList = await sparePartsSuggestions
+  .find({
+    $or: [
+      {
+        partNumber: {
+          $regex: queryParameter,
+          $options: "i",
+        },
+      },
+      {
+        partDescription: {
+          $regex: queryParameter,
+          $options: "i",
+        },
+      },
+    ],
+  }).limit(40).toArray();
+;
+
+return response.status(200).json({
+  response: "spare parts list fetched successfully",
+  data: sparePartsSuggestionsList,
+});
    
        
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});
+
+
+ app.post('/addSpares', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+       if(payload.role === "admin"){
+ 
+         const result = await addSpares.insertOne( {
+           vehicleId: String(request.body.vehicleId), 
+           complaintId: String(request.body.complaintId),
+           partNumber: String(request.body.sparePartNumber),
+           partDescription: String(request.body.sparePartDescription),
+           MRP: String(request.body.sparePartMRP),
+           quantity: String(request.body.sparePartQuantity),
+         });
+               console.log(`Document inserted with _id: ${result.insertedId}`);
+         response.status(200);
+        return response.send({ "response":'Spare added successfully'})
+   
+       }else{
+         response.status(403);
+        return response.send({"response": "Invalid access, Not Authorized"})
+       }
+ 
      }})}
  
  

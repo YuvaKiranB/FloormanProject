@@ -42,6 +42,10 @@ import {
  SparePartQuantity,
  SparesSuggestionsContainer,
  SparesSuggitionsHeading,
+ SparePartSuggestionContainer,
+ PartNumberPara,
+ PartDescriptionPara,
+ PartMRPPara, 
  
 } from './styling'
 
@@ -76,9 +80,11 @@ class ComplaintDetails extends Component {
             workId: "",
             ROT: [],
             sparePartNumber: "",
-            SparePartDescription: "",
-            SparePartQuantity: "",
-            sparePartSuggestions: [],
+            sparePartDescription: "",
+            sparePartQuantity: "",
+            sparePartId: "",
+            sparePartMRP: "",
+            sparePartsSuggestions: [],
             
    }
 
@@ -138,14 +144,22 @@ class ComplaintDetails extends Component {
   handleSparesChange = event => {
     const name = event.target.name
     const value = event.target.value  
-    this.setState({[name] : value, showSparesError: false})
+    this.setState(
+      {
+        [name]: value,
+        showSparesError: false,
+      },
+      () => {
+        if (value.length >= 3) {
+          this.getSparePartsSuggestions()
+        }
+      }
+    )
+  }
 
-    console.log(value.length)
-
-    if (value.length >= 3){
-      console.log("triggered spares suggestion")
-      this.getSparePartsSuggestions()
-    }
+  handleSpareInput = eachItem => {
+    console.log(eachItem)
+    this.setState({sparePartNumber: eachItem.partNumber, sparePartDescription: eachItem.partDescription, sparePartMRP: eachItem.MRP})
   }
 
 
@@ -210,13 +224,13 @@ class ComplaintDetails extends Component {
     event.preventDefault();
 
     const {vehicleId,complaintId} = this.props
-    const {workDescription, workStatus, mechanic, helper} = this.state
+    const {sparePartNumber, sparePartDescription, sparePartMRP, sparePartQuantity} = this.state
 
 
 
-    const workDetails = {vehicleId, complaintId, workDescription,workStatus, mechanic, helper}
+    const spareDetails = {vehicleId, complaintId, sparePartNumber, sparePartDescription, sparePartMRP, sparePartQuantity}
 
-      if (workDescription.length < 3 ){
+      if (sparePartNumber.length < 8 ){
          this.setState({showError: true})
       }else{
 
@@ -225,9 +239,9 @@ class ComplaintDetails extends Component {
         const OurUrl = process.env.REACT_APP_OURURL
 
 
-        const url = `${OurUrl}/addWork`
+        const url = `${OurUrl}/addSpares`
 
-        const jsonUserDetails = JSON.stringify(workDetails)
+        const jsonUserDetails = JSON.stringify(spareDetails)
         const options = {
           method: 'POST',
           headers: {'Content-Type': "application/json", Authorization: `Bearer ${jwtToken}`,}, 
@@ -243,13 +257,13 @@ class ComplaintDetails extends Component {
         
         if (response.ok === true) {
           this.setState({
-            workId : data._id,
-            workDescription: "",
-            isWorkAdded: true,
-            workStatus : "UNASSIGNED",
-            mechanic: "NA",
-            helper: "NA",
-            workAddedMsg: data.response,
+            spareId : data._id,
+            sparePartDescription: "",
+            sparePartMRP: "",
+            sparePartNumber: "",
+            sparePartQuantity: "",
+            isSparesAdded: true,
+            sparesAddedMsg: data.response,
               })
 
               this.getWorksData()
@@ -266,7 +280,6 @@ class ComplaintDetails extends Component {
 
   getWorksData = async () => {
     const {complaintId} = this.props
-    console.log(complaintId)
     this.setState({workPageStatus: apiStatusConstants.process})
     const jwtToken = Cookies.get('jwt_token')
     const OurUrl = process.env.REACT_APP_OURURL
@@ -290,7 +303,6 @@ class ComplaintDetails extends Component {
 
 
     if (response.ok) {
-    console.log(worksData)
 
       this.setState({
         worksData: [...worksData],
@@ -307,7 +319,8 @@ class ComplaintDetails extends Component {
     const {sparePartNumber, sparePartDescription} = this.state
     const jwtToken = Cookies.get('jwt_token')
     const OurUrl = process.env.REACT_APP_OURURL
-    const url = `${OurUrl}/works/sparePartSuggestions?partNo=${sparePartNumber}&partDescription=${sparePartDescription}`
+    const url = `${OurUrl}/sparePartsSuggestions?partNumber=${sparePartNumber}&partDescription=${sparePartDescription}`
+    console.log(url)
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -318,6 +331,8 @@ class ComplaintDetails extends Component {
     const response = await fetch(url, options)
     const spares = await response.json()
     const sparesData = spares.data
+
+    console.log(sparesData)
     
 
 
@@ -329,7 +344,7 @@ class ComplaintDetails extends Component {
     if (response.ok) {
 
       this.setState({
-        sparesData: [...sparesData],
+        sparePartsSuggestions: [...sparesData],
       })
 
       console.log(sparesData)
@@ -364,7 +379,8 @@ class ComplaintDetails extends Component {
       addSparesErrMsg,
       sparePartNumber,
       sparePartDescription,
-      sparePartQuantity
+      sparePartQuantity,
+      sparePartsSuggestions,
 
     } = this.state  
     return(
@@ -554,7 +570,7 @@ class ComplaintDetails extends Component {
         </Label>
 
         <SparePartNumberInput
-          id="SparePartNumber"
+          id="sparePartNumber"
           placeholder="Enter Atleast 3 char..."
           value={sparePartNumber}
           onChange={this.handleSparesChange}
@@ -568,7 +584,7 @@ class ComplaintDetails extends Component {
         </Label>
 
         <SparePartDescription
-          id="SparePartDescription"
+          id="sparePartDescription"
           placeholder="Enter Atleast 3 char..."
           value={sparePartDescription}
           onChange={this.handleSparesChange}
@@ -582,7 +598,7 @@ class ComplaintDetails extends Component {
         </Label>
 
         <SparePartQuantity
-          id="SparePartQuantity"
+          id="sparePartQuantity"
           placeholder="Enter quantity..."
           value={sparePartQuantity}
           onChange={this.handleSparesChange}
@@ -613,10 +629,20 @@ class ComplaintDetails extends Component {
         <Button type="submit" onClick={this.handleAddSparesSubmit}>Submit</Button>
       </FormWrapper>
 
+      <SparesSuggitionsHeading>Suggestions</SparesSuggitionsHeading>
+
       <SparesSuggestionsContainer>
-        <SparesSuggitionsHeading>Suggestions</SparesSuggitionsHeading>
 
+        {(sparePartsSuggestions.map(eachItem => (
+                        <SparePartSuggestionContainer onClick={() => this.handleSpareInput(eachItem)}>
+                          <PartNumberPara>{eachItem.partNumber}</PartNumberPara>
+                          <PartDescriptionPara>{eachItem.partDescription}</PartDescriptionPara>
+                          <PartMRPPara>{eachItem.MRP}</PartMRPPara>
 
+                        </SparePartSuggestionContainer>
+                      ))) 
+        }
+ 
       </SparesSuggestionsContainer>
     </ContainerB>
 

@@ -413,7 +413,43 @@ export const HeaderDiv = styled.div`
   border-radius: 8px;
 `
 
-export const SparesSuggestionsContainer = styled.div``
+export const SparesSuggestionsContainer = styled.div`
+overflow-y: scroll;`
 
 export const SparesSuggitionsHeading = styled.h1`
-font-size: 18px;`
+font-size: 18px;
+margin-top: 0px;`
+
+export const SparePartSuggestionContainer = styled.div`
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: space-between;
+border-width: 2px;
+border-style: solid;
+border-color: black;
+margin-bottom: 10px;
+padding: 0px;
+border-radius: 5px;
+cursor: pointer;
+`
+
+export const PartNumberPara = styled.p`
+padding: 5px;
+cursor: pointer;
+border-right: 2px solid black;
+margin: 0px;`
+
+export const PartDescriptionPara = styled.p`
+padding: 5px;
+cursor: pointer;
+margin: 0px;
+border-right-width: 0px;
+border-left-width: 0px;
+`
+
+export const PartMRPPara = styled.p`
+padding: 5px;
+cursor: pointer;
+border-left: 2px solid black;
+margin: 0px;`
