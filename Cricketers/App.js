@@ -504,6 +504,8 @@ return response.status(200).json({
            partDescription: String(request.body.sparePartDescription),
            MRP: String(request.body.sparePartMRP),
            quantity: String(request.body.sparePartQuantity),
+           sparePartStatus: String(""),
+           sparePartRemarks: String("")
          });
                console.log(`Document inserted with _id: ${result.insertedId}`);
          response.status(200);
@@ -522,3 +524,44 @@ return response.status(200).json({
    response.status(500).send(err);
    console.log(err.message)
  }});
+
+
+ app.get('/spares/:id', async (request, response) => {
+
+  try{
+    let jwtToken;
+    const authHeader = request.headers["authorization"];
+    if (authHeader !== undefined) {
+      jwtToken = authHeader.split(" ")[1];
+    }
+    if (jwtToken === undefined) {
+      response.status(401);
+      return response.send({"response":"Invalid Access Token"});
+    } else {
+      jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+        if (error) {
+          return response.status(401).send({
+            response: 'Invalid Access Token',
+          })
+      } else {
+
+          const {id} = request.params
+  
+          const sparesDetail = await addSpares.find({complaintId: id}).toArray();
+          return response.status(200).send({
+           response: 'Spares fetched successfully',
+           data: sparesDetail,
+         })
+    
+        
+      }})}
+  
+  
+    
+  } catch (err) {
+    response.status(500).send(err);
+    console.log(err.message)
+  }
+
+
+ })

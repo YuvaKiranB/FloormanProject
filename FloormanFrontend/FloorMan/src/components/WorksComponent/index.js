@@ -40,7 +40,7 @@ import {
              showError: false,
              isAddWorkAuthError : false,
              isSparesAdded: false,
-             sparesPageStatus: apiStatusConstants.initial, 
+             sparesPageStatus: apiStatusConstants.initial,  
              sparesData: [], 
              sparesAddedMsg : "",
              spares: "",

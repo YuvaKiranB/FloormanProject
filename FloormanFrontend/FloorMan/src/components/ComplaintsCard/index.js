@@ -3,6 +3,7 @@ import {Component} from 'react'
 import Cookies from 'js-cookie'
 
 import WorksDetails from '../WorksComponent'
+import SparePartsList from '../SpareParts'
 
 import {
  ComplaintDropDownContainer,
@@ -45,7 +46,17 @@ import {
  SparePartSuggestionContainer,
  PartNumberPara,
  PartDescriptionPara,
- PartMRPPara, 
+ PartMRPPara,
+ Page,
+ Container,
+    Table,
+    Td,
+    HeaderCell,
+    TitleCell,
+    DescriptionHeader,
+    DescriptionPara,
+    RemarksSpan,
+    RemarksCell,
  
 } from './styling'
 
@@ -69,6 +80,7 @@ class ComplaintDetails extends Component {
             isWorkAdded: false,
             isSparesAdded: false,
             workPageStatus: apiStatusConstants.initial, 
+            sparesPageStatus: apiStatusConstants.initial, 
             worksData: [], 
             workAddedMsg : "",
             work: "",
@@ -85,6 +97,7 @@ class ComplaintDetails extends Component {
             sparePartId: "",
             sparePartMRP: "",
             sparePartsSuggestions: [],
+            sparesData: [],
             
    }
 
@@ -92,6 +105,7 @@ class ComplaintDetails extends Component {
    componentDidMount(){
 
     this.getWorksData()
+    this.getSparesData()
 
    }
   
@@ -266,7 +280,7 @@ class ComplaintDetails extends Component {
             sparesAddedMsg: data.response,
               })
 
-              this.getWorksData()
+              this.getSparesData()
     
         } else {
           this.onSubmitFailure(data.response)
@@ -310,6 +324,37 @@ class ComplaintDetails extends Component {
       })
     } else {
       this.setState({workPageStatus: apiStatusConstants.failure})
+    }
+  }
+
+
+  getSparesData = async () => {
+    const {complaintId} = this.props
+    this.setState({sparesPageStatus: apiStatusConstants.process})
+    const jwtToken = Cookies.get('jwt_token')
+    const OurUrl = process.env.REACT_APP_OURURL
+    const url = `${OurUrl}/spares/${complaintId}`
+    const options = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+      method: 'GET',
+    }
+
+    const response = await fetch(url, options)
+    const spares = await response.json()
+    const sparesData = spares.data
+    
+
+
+    if (response.ok) {
+
+      this.setState({
+        sparesData: [...sparesData],
+        sparesPageStatus: apiStatusConstants.success,
+      })
+    } else {
+      this.setState({sparesPageStatus: apiStatusConstants.failure})
     }
   }
 
@@ -381,6 +426,8 @@ class ComplaintDetails extends Component {
       sparePartDescription,
       sparePartQuantity,
       sparePartsSuggestions,
+      sparesData,
+      sparesPageStatus,
 
     } = this.state  
     return(
@@ -425,11 +472,32 @@ class ComplaintDetails extends Component {
         </SparesHeader>
         </SparesItem>
 
-        {workPageStatus === apiStatusConstants.success && 
-                        (worksData.map(eachItem => (
-                        <WorksDetails key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} />
+        <Container>
+      <Table>
+        <tbody>
+
+          <tr>
+            <Td>Part Number</Td>
+            <Td>Part Description</Td>
+            <Td>Quantity</Td>
+            <Td>MRP</Td>
+            <Td>Part Status</Td>
+            <Td>Remarks</Td>
+          </tr>
+
+
+
+
+        {sparesPageStatus === apiStatusConstants.success && 
+                        (sparesData.map(eachItem => (
+                        <SparePartsList key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} />
                       )))
         }
+
+</tbody>
+
+</Table>
+</Container> 
         
          </SparesMenu>
         {isOpen && (
