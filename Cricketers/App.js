@@ -347,6 +347,7 @@ app.get('/vehiclesList', async (request, response) => {
            workStatus: String(request.body.workStatus),
            mechanic: String(request.body.mechanic),
            helper: String(request.body.helper),
+           workRemarks: String(request.body.workRemarks)
          });
                console.log(`Document inserted with _id: ${result.insertedId}`);
          response.status(200);

@@ -98,6 +98,7 @@ class ComplaintDetails extends Component {
             sparePartMRP: "",
             sparePartsSuggestions: [],
             sparesData: [],
+            workRemarks: "",
             
    }
 
@@ -292,6 +293,80 @@ class ComplaintDetails extends Component {
   };
 
 
+  handleAddWorkSubmit = async event => {
+    event.preventDefault();
+
+    const {vehicleId,complaintId} = this.props
+    const {workDescription, workStatus, mechanic, helper, workRemarks} = this.state
+
+
+
+    const workDetails = {vehicleId, complaintId, workDescription,workStatus, mechanic, helper, workRemarks}
+
+      if (workDescription.length < 3 ){
+         this.setState({showError: true})
+      }else{
+        const jwtToken = Cookies.get('jwt_token')
+        const OurUrl = process.env.REACT_APP_OURURL
+
+
+        const url = `${OurUrl}/addWork`
+
+        const jsonUserDetails = JSON.stringify(workDetails)
+        const options = {
+          method: 'POST',
+          headers: {'Content-Type': "application/json", Authorization: `Bearer ${jwtToken}`,}, 
+          body: jsonUserDetails,
+        }
+
+
+       const response = await fetch(url, options)
+
+
+        const data = await response.json()
+
+
+        if (response.ok === true) {
+          this.setState({
+            workId : data._id,
+            workDescription: "",
+            isWorkAdded: true,
+            workStatus : "UNASSIGNED",
+            mechanic: "NA",
+            helper: "NA",
+            workAddedMsg: data.response,
+            workRemarks : ""
+              })
+
+              this.getWorksData()
+
+        } else {
+          this.onSubmitFailure(data.response)
+        }
+      }
+
+
+
+  };
+
+  handleWorkChange = event => {
+    const name = event.target.name
+    const value = event.target.value  
+    this.setState(
+      {
+        [name]: value,
+        showError: false,
+      },
+      () => {
+        if (value.length >= 3) {
+          
+        }
+      }
+    )
+  }
+ 
+
+
   getWorksData = async () => {
     const {complaintId} = this.props
     this.setState({workPageStatus: apiStatusConstants.process})
@@ -360,6 +435,7 @@ class ComplaintDetails extends Component {
 
 
 
+
   getSparePartsSuggestions = async () => {
     const {sparePartNumber, sparePartDescription} = this.state
     const jwtToken = Cookies.get('jwt_token')
@@ -402,6 +478,7 @@ class ComplaintDetails extends Component {
 
 
 
+
    render(){
     const {content} = this.props
     const {_id, vehicleId, complaint} = content
@@ -428,6 +505,7 @@ class ComplaintDetails extends Component {
       sparePartsSuggestions,
       sparesData,
       sparesPageStatus,
+      workRemarks
 
     } = this.state  
     return(
@@ -453,7 +531,7 @@ class ComplaintDetails extends Component {
 
         {workPageStatus === apiStatusConstants.success && 
                         (worksData.map(eachItem => (
-                        <WorksDetails key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} />
+                        <WorksDetails key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} getWorks={this.getWorksData}/>
                       )))
         }
         
@@ -588,6 +666,20 @@ class ComplaintDetails extends Component {
           <option value="HELPER5">Helper 5</option>
           <option value="HELPER6">Helper 6</option>
         </Select>
+      </FieldContainer>
+
+      <FieldContainer>
+        <Label htmlFor="workDescription">
+          Remarks
+        </Label>
+
+        <TextArea
+          id="workRemarks"
+          placeholder="Enter work Remarks..."
+          value={workRemarks}
+          onChange={this.handleWorkChange}
+          name="workRemarks"
+        />
       </FieldContainer>
 
     </>
