@@ -566,3 +566,57 @@ return response.status(200).json({
 
 
  })
+
+
+ app.put('/editWork', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+       if(payload.role === "admin"){
+
+        const {_id} = request.body
+ 
+         const result = await addWork.updateOne( 
+          {_id: new ObjectId(_id)},
+          {
+            $set: 
+           {
+
+           workDescription: String(request.body.workDescription),
+           workStatus: String(request.body.workStatus),
+           mechanic: String(request.body.mechanic),
+           helper: String(request.body.helper),
+           workRemarks: String(request.body.workRemarks)
+         }});
+               console.log(`Document inserted with _id: ${result.insertedId}`);
+         response.status(200);
+        return response.send({ "response":'Complaint added successfully'})
+   
+       }else{
+         response.status(403);
+        return response.send({"response": "Invalid access, Not Authorized"})
+       }
+ 
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});
