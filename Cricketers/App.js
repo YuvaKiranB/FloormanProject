@@ -53,6 +53,8 @@ const addComplaint = db.collection('complaints')
 const addWork = db.collection('works')
 const sparePartsSuggestions = db.collection('sparePartsSuggestions')
 const addSpares = db.collection('sparesData')
+const rotSuggestions = db.collection('ROTSuggestions')
+const rotData = db.collection('ROTData')
 
 run().catch(console.error);
 
@@ -620,3 +622,159 @@ return response.status(200).json({
    response.status(500).send(err);
    console.log(err.message)
  }});
+
+
+
+ app.get('/rotSuggestions', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+
+      
+
+      const { rotCode = "", rotDescription = "" } = request.query;
+      let queryParameter = ""
+      if (rotCode === ""){
+        queryParameter = rotDescription
+      }else{
+        queryParameter = rotCode
+      }
+
+const rotSuggestionsList = await rotSuggestions
+  .find({
+    $or: [
+      {
+        labour: {
+          $regex: queryParameter,
+          $options: "i",
+        },
+      },
+      {
+        labourDescription: {
+          $regex: queryParameter,
+          $options: "i",
+        },
+      },
+    ],
+  }).limit(40).toArray();
+;
+
+return response.status(200).json({
+  response: "rot list fetched successfully",
+  data: rotSuggestionsList,
+});
+   
+       
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});
+
+
+ app.post('/addRot', async (request, response) => {
+
+  
+  try{
+   let jwtToken;
+   const authHeader = request.headers["authorization"];
+   if (authHeader !== undefined) {
+     jwtToken = authHeader.split(" ")[1];
+   }
+   if (jwtToken === undefined) {
+     response.status(401);
+     return response.send({"response":"Invalid Access Token"});
+   } else {
+     jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+       if (error) {
+         return response.status(401).send({
+           response: 'Invalid Access Token',
+         })
+     } else {
+       if(payload.role === "admin"){
+ 
+         const result = await rotData.insertOne( {
+           rotCode: String(request.body.rotCode), 
+           rotDescription: String(request.body.rotDescription),
+           hrs: Number(request.body.hrs),
+           vehicleId: String(request.body.vehicleId), 
+           complaintId: String(request.body.complaintId),
+           workId: String(request.body.workId),
+           percentage: String(request.body.percentage),
+         });
+               console.log(`Document inserted with _id: ${result.insertedId}`);
+         response.status(200);
+        return response.send({ "response":'ROT added successfully'})
+   
+       }else{
+         response.status(403);
+        return response.send({"response": "Invalid access, Not Authorized"})
+       }
+ 
+     }})}
+ 
+ 
+   
+ } catch (err) {
+   response.status(500).send(err);
+   console.log(err.message)
+ }});
+
+
+ app.get('/rots/:id', async (request, response) => {
+
+  try{
+    let jwtToken;
+    const authHeader = request.headers["authorization"];
+    if (authHeader !== undefined) {
+      jwtToken = authHeader.split(" ")[1];
+    }
+    if (jwtToken === undefined) {
+      response.status(401);
+      return response.send({"response":"Invalid Access Token"});
+    } else {
+      jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+        if (error) {
+          return response.status(401).send({
+            response: 'Invalid Access Token',
+          })
+      } else {
+
+          const {id} = request.params
+  
+          const rotDetail = await rotData.find({workId: id}).toArray();
+          return response.status(200).send({
+           response: 'ROTs fetched successfully',
+           data: rotDetail,
+         })
+    
+        
+      }})}
+  
+  
+    
+  } catch (err) {
+    response.status(500).send(err);
+    console.log(err.message)
+  }
+
+
+ })

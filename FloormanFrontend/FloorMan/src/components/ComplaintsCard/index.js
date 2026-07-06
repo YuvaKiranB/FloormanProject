@@ -482,6 +482,7 @@ class ComplaintDetails extends Component {
    render(){
     const {content} = this.props
     const {_id, vehicleId, complaint} = content
+    const complaintId = _id
     const {complaintDescription, complaintDetailArrow, isOpen, showError,
       isAddWorkAuthError,
       isWorkAdded,
@@ -531,7 +532,7 @@ class ComplaintDetails extends Component {
 
         {workPageStatus === apiStatusConstants.success && 
                         (worksData.map(eachItem => (
-                        <WorksDetails key={eachItem._id} vehicleId= {vehicleId} complaintId={eachItem._id} content={eachItem} getWorks={this.getWorksData}/>
+                        <WorksDetails key={eachItem._id} vehicleId= {vehicleId} workId={eachItem._id} complaintId={complaintId} content={eachItem} getWorks={this.getWorksData}/>
                       )))
         }
         
